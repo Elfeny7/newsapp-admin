@@ -10,10 +10,18 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem("token");
     if (token) {
       api.get("/me")
-        .then((res) => setUser(res.data.data))
-        .catch(() => logout());
+        .then((res) => {
+          setUser(res.data.data);
+        })
+        .catch(() => {
+          logout();
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = async (email, password) => {

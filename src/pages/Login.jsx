@@ -8,16 +8,26 @@ export default function Login() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            setLoading(true);
             await login(email, password);
             navigate("/");
         } catch (err) {
             setError(err.response?.data?.message || "Login gagal");
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) return (
+        <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+    );
 
     return (
         <div className="flex h-screen justify-center items-center">
