@@ -9,6 +9,7 @@ export default function Login() {
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,7 +32,10 @@ export default function Login() {
 
     return (
         <div className="flex h-screen justify-center items-center">
-            <form onSubmit={handleSubmit} className="p-6 bg-white shadow rounded w-80">
+            <form
+                onSubmit={handleSubmit}
+                className="p-6 bg-white shadow rounded w-80 relative"
+            >
                 <h1 className="text-xl mb-4">Login Admin</h1>
                 {error && <p className="text-red-500">{error}</p>}
                 <input
@@ -39,16 +43,29 @@ export default function Login() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border p-2 w-full mb-2"
+                    className="border p-2 w-full mb-2 rounded"
                 />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="border p-2 w-full mb-2"
-                />
-                <button type="submit" className="bg-blue-500 text-white p-2 w-full">
+                <div className="relative">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="border p-2 w-full mb-2 rounded pr-10"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                    >
+                        {showPassword ? "🙈" : "👁"}
+                    </button>
+                </div>
+
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white p-2 w-full rounded hover:bg-blue-600"
+                >
                     Login
                 </button>
             </form>
