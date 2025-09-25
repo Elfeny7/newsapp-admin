@@ -18,7 +18,13 @@ export default function Login() {
             await login(email, password);
             navigate("/");
         } catch (err) {
-            setError(err.response?.data?.message || "Login gagal");
+            let message = "Login gagal";
+            if (err.response?.data?.message) {
+                message = err.response.data.message;
+            } else if (err.message) {
+                message = err.message;
+            }
+            setError(message);
         } finally {
             setLoading(false);
         }
