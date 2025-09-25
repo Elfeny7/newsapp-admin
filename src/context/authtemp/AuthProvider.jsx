@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "../../api/axios";
+import { meApi, loginApi } from "../../api/auth";
 import AuthContext from "./AuthContext";
 
 export function AuthProvider({ children }) {
@@ -9,9 +9,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      api.get("/me")
-        .then((res) => {
-          setUser(res.data.data);
+      meApi()
+        .then((user) => {
+          setUser(user);
         })
         .catch(() => {
           logout();
@@ -25,9 +25,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post("/login", { email, password });
-    localStorage.setItem("token", res.data.data.token);
-    setUser(res.data.data.user);
+    const res = await loginApi(email, password)
+    localStorage.setItem("token", res.token);
+    setUser(res.user);
   };
 
   const logout = () => {
