@@ -1,4 +1,5 @@
 import AuthContext from "../context/authtemp/AuthContext";
+import { Link } from "react-router-dom";
 import { useContext } from "react";
 
 export default function Dashboard() {
@@ -10,6 +11,10 @@ export default function Dashboard() {
       <p>Selamat datang, {user.name}!</p>
       <p>Email: {user.email}</p>
       <p>Role: {user.role}</p>
+      <Link to="/users" className="text-blue-500 hover:underline">
+        CRUD User
+      </Link>
+      
     </div>
   );
 }
