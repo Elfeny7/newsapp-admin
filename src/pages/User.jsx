@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchAllUsers } from "../services/userService";
+import { fetchAllUsers, userCreate } from "../services/userService";
 
 export default function User() {
     const [users, setUsers] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [form, setForm] = useState({ id: null, name: "", email: "" });
-    const [isEditing, setIsEditing] = useState(false);
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        password: "",
+        role: "viewer",
+    });
 
     useEffect(() => {
         const loadUsers = async () => {
@@ -28,10 +33,17 @@ export default function User() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!form.name || !form.email) return;
+        try {
+            const newUser = await userCreate(form);
+            setUsers((prev) => [...prev, newUser]);
+            setForm({ name: "", email: "", password: "", role: "viewer" });
+        } catch (err) {
+            setError(err.message);
+        }
+        // if (!form.name || !form.email) return;
 
         if (isEditing) {
             setUsers(
@@ -82,6 +94,19 @@ export default function User() {
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="border p-2 w-full rounded"
+                />
+                <select name="role" value={form.role} onChange={handleChange}>
+                    <option value="superadmin">Superadmin</option>
+                    <option value="journalist">Journalist</option>
+                    <option value="viewer">Viewer</option>
+                </select>
                 <button
                     type="submit"
                     className="bg-blue-500 text-white px-3 py-2 rounded w-full"
