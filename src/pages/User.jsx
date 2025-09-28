@@ -37,24 +37,15 @@ export default function User() {
         e.preventDefault();
 
         try {
+            setLoading(true);
             const newUser = await userCreate(form);
             setUsers((prev) => [...prev, newUser]);
             setForm({ name: "", email: "", password: "", role: "viewer" });
         } catch (err) {
             setError(err.message);
+        } finally {
+            setLoading(false);
         }
-        // if (!form.name || !form.email) return;
-
-        if (isEditing) {
-            setUsers(
-                users.map((u) => (u.id === form.id ? { ...form } : u))
-            );
-            setIsEditing(false);
-        } else {
-            setUsers([...users, { ...form, id: Date.now() }]);
-        }
-
-        setForm({ id: null, name: "", email: "" });
     };
 
     const handleEdit = (user) => {
