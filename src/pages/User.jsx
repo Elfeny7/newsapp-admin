@@ -93,14 +93,14 @@ export default function User() {
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
-                <select name="role" value={form.role} onChange={handleChange}>
+                <select name="role" value={form.role} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
                     <option value="superadmin">Superadmin</option>
                     <option value="journalist">Journalist</option>
                     <option value="viewer">Viewer</option>
                 </select>
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white px-3 py-2 rounded w-full"
+                    className="bg-blue-500 text-white px-3 py-2 rounded w-full cursor-pointer"
                 >
                     {isEditing ? "Update User" : "Add User"}
                 </button>
@@ -126,13 +126,13 @@ export default function User() {
                             <td className="border p-2 space-x-2">
                                 <button
                                     onClick={() => handleEdit(u)}
-                                    className="bg-yellow-500 text-white px-2 py-1 rounded"
+                                    className="bg-yellow-500 text-white px-2 py-1 rounded cursor-pointer"
                                 >
                                     Edit
                                 </button>
                                 <button
                                     onClick={() => handleDelete(u.id)}
-                                    className="bg-red-500 text-white px-2 py-1 rounded"
+                                    className="bg-red-500 text-white px-2 py-1 rounded cursor-pointer"
                                 >
                                     Delete
                                 </button>
