@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchAllUsers, userCreate } from "../services/userService";
+import { fetchAllUsers, userCreate, userDelete } from "../services/userService";
 
 export default function User() {
     const [users, setUsers] = useState([]);
@@ -53,8 +53,16 @@ export default function User() {
         setIsEditing(true);
     };
 
-    const handleDelete = (id) => {
-        setUsers(users.filter((u) => u.id !== id));
+    const handleDelete = async (id) => {
+        try {
+            setLoading(true);
+            await userDelete(id);
+            setUsers(users.filter((u) => u.id !== id));
+        } catch (err) {
+            setError(err.message || "Gagal menghapus user");
+        } finally {
+            setLoading(false);
+        }
     };
 
 
