@@ -1,4 +1,4 @@
-import { userIndexApi, userCreateApi, userDeleteApi } from "../api/user";
+import { userIndexApi, userCreateApi, userDeleteApi, userUpdateApi } from "../api/user";
 
 export const fetchAllUsers = async() => {
     return await userIndexApi();
@@ -24,3 +24,15 @@ export const userDelete = async (id) => {
     throw new Error(err.response?.data?.message || "Gagal menghapus user");
   }
 };
+
+export const userUpdate = async (id, payload) => {
+  if (!payload.email) {
+    throw new Error("Email wajib diisi");
+  }
+
+  try {
+    await userUpdateApi(id, payload);
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Gagal mengupdate user");
+  }
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchAllUsers, userCreate, userDelete } from "../services/userService";
+import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/userService";
 
 export default function User() {
     const [users, setUsers] = useState([]);
@@ -38,11 +38,20 @@ export default function User() {
 
         try {
             setLoading(true);
-            const newUser = await userCreate(form);
-            setUsers((prev) => [...prev, newUser]);
+
+            if (isEditing) {
+                await userUpdate(form.id, form);
+                const freshUsers = await fetchAllUsers();
+                setUsers(freshUsers);
+                setIsEditing(false);
+            } else {
+                const newUser = await userCreate(form);
+                setUsers((prev) => [...prev, newUser]);
+            }
+
             setForm({ name: "", email: "", password: "", role: "viewer" });
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Gagal menyimpan data");
         } finally {
             setLoading(false);
         }
@@ -156,7 +165,7 @@ export default function User() {
                     )}
                 </tbody>
             </table>
-            <Link to="/">Back to Dashboard</Link>
+            <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
         </div>
     );
 }

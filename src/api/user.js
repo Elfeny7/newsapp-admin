@@ -10,3 +10,7 @@ export const userCreateApi = async ({ name, email, password, role }) => {
 export const userDeleteApi = async (id) => {
   await api.delete(`/users/${id}`);
 };
+
+export const userUpdateApi = async (id, payload) => {
+  await api.patch(`/users/${id}`, payload);
+};
