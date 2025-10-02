@@ -14,6 +14,10 @@ export default function Dashboard() {
       <Link to="/users" className="text-blue-500 hover:underline">
         CRUD User
       </Link>
+      <br></br>
+      <Link to="/categories" className="text-blue-500 hover:underline">
+        CRUD Category
+      </Link>
       
     </div>
   );
