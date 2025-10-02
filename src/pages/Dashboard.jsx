@@ -12,13 +12,16 @@ export default function Dashboard() {
       <p>Email: {user.email}</p>
       <p>Role: {user.role}</p>
       <Link to="/users" className="text-blue-500 hover:underline">
-        CRUD User
+        User Management
       </Link>
       <br></br>
       <Link to="/categories" className="text-blue-500 hover:underline">
-        CRUD Category
+        Category Management
       </Link>
-      
+      <br></br>
+      <Link to="/news" className="text-blue-500 hover:underline">
+        News Management
+      </Link>
     </div>
   );
 }

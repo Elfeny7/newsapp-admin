@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import User from "./pages/User";
 import Categories from "./pages/Category";
+import News from "./pages/News";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -30,6 +31,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Categories />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/news"
+        element={
+          <ProtectedRoute>
+            <News />
           </ProtectedRoute>
         }
       />
