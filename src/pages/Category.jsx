@@ -54,7 +54,7 @@ export default function Category() {
                 name: "",
                 slug: "",
                 description: "",
-                parent: "",
+                parent_id: "",
                 status: "active"
             });
         } catch (err) {
@@ -117,7 +117,7 @@ export default function Category() {
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
-                <select name="parent" value={form.parent} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
+                <select name="parent_id" value={form.parent_id} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
                     <option value="">-- No Parent --</option>
                     {categories.map((c) => (
                         <option key={c.id} value={c.id}>
