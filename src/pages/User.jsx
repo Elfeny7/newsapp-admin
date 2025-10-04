@@ -74,6 +74,16 @@ export default function User() {
         }
     };
 
+    const handleCancel = () => {
+        setForm({
+            name: "",
+            email: "",
+            password: "",
+            role: "viewer",
+        });
+        setIsEditing(false);
+    }
+
 
     if (loading) return (
         <div className="flex items-center justify-center h-screen">
@@ -121,6 +131,15 @@ export default function User() {
                 >
                     {isEditing ? "Update User" : "Add User"}
                 </button>
+                {isEditing && (
+                    <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="bg-red-700 text-white px-3 py-2 rounded w-full cursor-pointer"
+                    >
+                        Cancel Edit
+                    </button>
+                )}
             </form>
 
             <table className="w-full border border-gray-300">
