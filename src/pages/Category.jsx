@@ -81,6 +81,17 @@ export default function Category() {
         }
     };
 
+    const handleCancel = () => {
+        setForm({
+            name: "",
+            slug: "",
+            description: "",
+            parent_id: "",
+            status: "active"
+        });
+        setIsEditing(false);
+    }
+
 
     if (loading) return (
         <div className="flex items-center justify-center h-screen">
@@ -119,11 +130,14 @@ export default function Category() {
                 />
                 <select name="parent_id" value={form.parent_id} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
                     <option value="">-- No Parent --</option>
-                    {categories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                            {c.name}
-                        </option>
-                    ))}
+                    {categories.map((c) => {
+                        if (isEditing && c.id === form.id) return null;
+                        return (
+                            <option key={c.id} value={c.id}>
+                                {c.name}
+                            </option>
+                        )
+                    })}
                 </select>
                 <select name="status" value={form.status} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
                     <option value="active">Active</option>
@@ -135,6 +149,16 @@ export default function Category() {
                 >
                     {isEditing ? "Update Category" : "Add Category"}
                 </button>
+                {isEditing && (
+                    <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="bg-red-700 text-white px-3 py-2 rounded w-full cursor-pointer"
+                    >
+                        Cancel Edit
+                    </button>
+                )}
+
             </form>
 
             <table className="w-full border border-gray-300">
