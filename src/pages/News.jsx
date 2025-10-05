@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchAllNews, newsCreate, newsDelete, newsUpdate } from "../services/newsService";
+import { fetchAllNews, newsCreate, newsDelete, newsUpdate, BASE_URL } from "../services/newsService";
 import { fetchAllCategories } from "../services/categoryService";
 
 export default function News() {
@@ -10,7 +10,7 @@ export default function News() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [form, setForm] = useState({
-        image: "",
+        image: null,
         title: "",
         slug: "",
         excerpt: "",
@@ -30,7 +30,7 @@ export default function News() {
                 setLoading(false);
             }
         };
-        
+
         const loadCategories = async () => {
             try {
                 const data = await fetchAllCategories();
@@ -41,13 +41,17 @@ export default function News() {
                 setLoading(false);
             }
         };
-        
+
         loadNews();
         loadCategories();
     }, []);
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        if (e.target.name === "image") {
+            setForm({ ...form, image: e.target.files[0] });
+        } else {
+            setForm({ ...form, [e.target.name]: e.target.value });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -76,7 +80,7 @@ export default function News() {
                 status: "published",
             });
         } catch (err) {
-            setError(err.message || "Gagal menyimpan data");
+            setError(err.message|| "Gagal menyimpan data");
         } finally {
             setLoading(false);
         }
@@ -112,12 +116,11 @@ export default function News() {
             {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit} className="mb-6 space-y-2">
                 <input
-                    type="image"
+                    type="file"
                     name="image"
                     placeholder="Image"
-                    value={form.image}
                     onChange={handleChange}
-                    className="border p-2 w-full rounded"
+                    className="border p-2 w-full rounded hover: cursor-pointer"
                 />
                 <input
                     type="text"
@@ -143,15 +146,14 @@ export default function News() {
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
-                <input
-                    type="text"
+                <textarea
                     name="content"
                     placeholder="Content"
                     value={form.content}
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
-                <select name="category" value={form.category} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer" requiredz>
+                <select name="category_id" value={form.category_id} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer" required>
                     <option value="">-- Pilih Kategori --</option>
                     {categories.map((c) => (
                         <option key={c.id} value={c.id}>
@@ -191,7 +193,7 @@ export default function News() {
                         return (
                             <tr key={n.id}>
                                 <td className="border p-2">{n.id}</td>
-                                <td className="border p-2">{n.image}</td>
+                                <td className="border p-2"><img src={BASE_URL + n.image} alt={n.title} width="200" /></td>
                                 <td className="border p-2">{n.title}</td>
                                 <td className="border p-2">{n.slug}</td>
                                 <td className="border p-2">{n.excerpt}</td>
