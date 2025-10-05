@@ -103,6 +103,19 @@ export default function News() {
         }
     };
 
+    const handleCancel = () => {
+        setForm({
+            image: null,
+            title: "",
+            slug: "",
+            excerpt: "",
+            content: "",
+            category_id: "",
+            status: "published",
+        });
+        setIsEditing(false);
+    }
+
 
     if (loading) return (
         <div className="flex items-center justify-center h-screen">
@@ -174,6 +187,15 @@ export default function News() {
                 >
                     {isEditing ? "Update News" : "Add News"}
                 </button>
+                {isEditing && (
+                    <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="bg-red-700 text-white px-3 py-2 rounded w-full cursor-pointer"
+                    >
+                        Cancel Edit
+                    </button>
+                )}
             </form>
 
             <table className="w-full border border-gray-300">
