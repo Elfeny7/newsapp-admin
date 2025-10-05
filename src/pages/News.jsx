@@ -80,7 +80,7 @@ export default function News() {
                 status: "published",
             });
         } catch (err) {
-            setError(err.message|| "Gagal menyimpan data");
+            setError(err.message || "Gagal menyimpan data");
         } finally {
             setLoading(false);
         }
@@ -155,11 +155,14 @@ export default function News() {
                 />
                 <select name="category_id" value={form.category_id} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer" required>
                     <option value="">-- Pilih Kategori --</option>
-                    {categories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                            {c.name}
-                        </option>
-                    ))}
+                    {categories.map((c) => {
+                        if (c.status === "inactive") return null;
+                        return (
+                            <option key={c.id} value={c.id}>
+                                {c.name}
+                            </option>
+                        )
+                    })}
                 </select>
                 <select name="status" value={form.status} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
                     <option value="published">Published</option>
