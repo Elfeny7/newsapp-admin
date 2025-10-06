@@ -13,6 +13,7 @@ export default function User() {
         password: "",
         role: "viewer",
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         const loadUsers = async () => {
@@ -112,14 +113,23 @@ export default function User() {
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={handleChange}
-                    className="border p-2 w-full rounded"
-                />
+                <div className="relative">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        placeholder="Password"
+                        value={form.password}
+                        onChange={handleChange}
+                        className="border p-2 w-full rounded"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                    >
+                        {showPassword ? "🙈" : "👁"}
+                    </button>
+                </div>
                 <select name="role" value={form.role} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
                     <option value="superadmin">Superadmin</option>
                     <option value="journalist">Journalist</option>
