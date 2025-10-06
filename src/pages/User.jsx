@@ -37,6 +37,8 @@ export default function User() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setError(null);
+
         try {
             setLoading(true);
 
@@ -52,18 +54,27 @@ export default function User() {
 
             setForm({ name: "", email: "", password: "", role: "viewer" });
         } catch (err) {
-            setError(err.message || "Gagal menyimpan data");
+            if (err.code == 422)
+                setError(err.errors);
+            else
+                setError(err.message || "Gagal menyimpan data");
         } finally {
             setLoading(false);
         }
     };
 
     const handleEdit = (user) => {
-        setForm(user);
+        setError(null);
+        setForm({
+            ...form,
+            ...user,
+            password: "",
+        });
         setIsEditing(true);
     };
 
     const handleDelete = async (id) => {
+        setError(null);
         try {
             setLoading(true);
             await userDelete(id);
@@ -76,6 +87,7 @@ export default function User() {
     };
 
     const handleCancel = () => {
+        setError(null);
         setForm({
             name: "",
             email: "",
@@ -84,7 +96,6 @@ export default function User() {
         });
         setIsEditing(false);
     }
-
 
     if (loading) return (
         <div className="flex items-center justify-center h-screen">
@@ -95,7 +106,6 @@ export default function User() {
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">User Management</h1>
-            {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit} className="mb-6 space-y-2">
                 <input
                     type="text"
@@ -105,6 +115,11 @@ export default function User() {
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
+                {error?.name && (
+                    <p className="text-red-500 text-sm">
+                        {error.name[0]}
+                    </p>
+                )}
                 <input
                     type="email"
                     name="email"
@@ -113,6 +128,11 @@ export default function User() {
                     onChange={handleChange}
                     className="border p-2 w-full rounded"
                 />
+                {error?.email && (
+                    <p className="text-red-500 text-sm">
+                        {error.email[0]}
+                    </p>
+                )}
                 <div className="relative">
                     <input
                         type={showPassword ? "text" : "password"}
@@ -122,6 +142,11 @@ export default function User() {
                         onChange={handleChange}
                         className="border p-2 w-full rounded"
                     />
+                    {error?.password && (
+                        <p className="text-red-500 text-sm">
+                            {error.password[0]}
+                        </p>
+                    )}
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
