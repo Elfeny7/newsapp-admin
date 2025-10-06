@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/userService";
+import ModalError from "../components/ModalError";
 
 export default function User() {
     const [users, setUsers] = useState([]);
@@ -14,6 +15,7 @@ export default function User() {
         role: "viewer",
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [globalError, setGlobalError] = useState(null);
 
     useEffect(() => {
         const loadUsers = async () => {
@@ -57,7 +59,7 @@ export default function User() {
             if (err.code == 422)
                 setError(err.errors);
             else
-                setError(err.message || "Gagal menyimpan data");
+                setGlobalError(err.message || "Terjadi kesalahan saat menyimpan data");
         } finally {
             setLoading(false);
         }
@@ -220,6 +222,12 @@ export default function User() {
                 </tbody>
             </table>
             <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
+            {globalError && (
+                <ModalError
+                    message={globalError}
+                    onClose={() => setGlobalError(null)}
+                />
+            )}
         </div>
     );
 }
