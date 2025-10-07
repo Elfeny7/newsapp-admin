@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/userService";
 import ModalError from "../components/ModalError";
+import toast from "react-hot-toast";
+
 
 export default function User() {
     const [users, setUsers] = useState([]);
@@ -51,9 +53,11 @@ export default function User() {
                 const freshUsers = await fetchAllUsers();
                 setUsers(freshUsers);
                 setIsEditing(false);
+                toast.success("Update User Success");
             } else {
                 const newUser = await userCreate(form);
                 setUsers((prev) => [...prev, newUser]);
+                toast.success("Create User Success");
             }
 
             setForm({ name: "", email: "", password: "", role: "viewer" });
@@ -83,6 +87,7 @@ export default function User() {
             setLoading(true);
             await userDelete(id);
             setUsers(users.filter((u) => u.id !== id));
+            toast.success("Delete User Success");
         } catch (err) {
             setError(err.message || "Gagal menghapus user");
         } finally {
