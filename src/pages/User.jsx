@@ -45,7 +45,9 @@ export default function User() {
             setLoading(true);
 
             if (isEditing) {
-                await userUpdate(form.id, form);
+                const payload = { ...form };
+                if (!payload.password) delete payload.password;
+                await userUpdate(form.id, payload);
                 const freshUsers = await fetchAllUsers();
                 setUsers(freshUsers);
                 setIsEditing(false);
