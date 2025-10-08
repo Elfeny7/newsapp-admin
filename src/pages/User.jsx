@@ -4,7 +4,6 @@ import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/u
 import ModalError from "../components/ModalError";
 import toast from "react-hot-toast";
 
-
 export default function User() {
     const [users, setUsers] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
@@ -197,24 +196,24 @@ export default function User() {
                 )}
             </form>
 
-            <table className="w-full border border-gray-300">
-                <thead className="bg-gray-100">
+            <table className="table-fixed w-full border border-gray-300 text-sm text-left">
+                <thead className="bbg-gray-100 text-gray-700 uppercase text-xs">
                     <tr>
-                        <th className="border p-2">ID</th>
-                        <th className="border p-2">Name</th>
-                        <th className="border p-2">Email</th>
-                        <th className="border p-2">Role</th>
-                        <th className="border p-2">Action</th>
+                        <th className="w-[60px] border p-2 text-center">ID</th>
+                        <th className="w-[30%] border p-2">Name</th>
+                        <th className="w-[30%] border p-2">Email</th>
+                        <th className="w-[15%] border p-2">Role</th>
+                        <th className="w-[15%] border p-2 text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200 ">
                     {users.map((u) => (
-                        <tr key={u.id}>
-                            <td className="border p-2">{u.id}</td>
+                        <tr key={u.id} className="hover:bg-gray-50 transition">
+                            <td className="border p-2 text-center">{u.id}</td>
                             <td className="border p-2">{u.name}</td>
                             <td className="border p-2">{u.email}</td>
                             <td className="border p-2">{u.role}</td>
-                            <td className="border p-2 space-x-2">
+                            <td className="border p-2 space-x-2 text-center">
                                 <button
                                     onClick={() => handleEdit(u)}
                                     disabled={loading}
@@ -240,13 +239,24 @@ export default function User() {
                     ))}
                     {users.length === 0 && (
                         <tr>
-                            <td colSpan="4" className="text-center p-4 text-gray-500">
-                                No users found
+                            <td colSpan="5" className="text-center p-6 text-gray-500">
+                                <div className="flex flex-col items-center">
+                                    <span>🫥</span>
+                                    <span className="mt-2">No users found</span>
+                                </div>
                             </td>
                         </tr>
                     )}
                 </tbody>
             </table>
+
+            {/*
+            <div className="p-6">
+                <h1 className="text-2xl font-semibold mb-4">User Management</h1>
+                <UserTable data={users} />
+            </div>
+            */}
+
             <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
             {globalError && (
                 <ModalError
