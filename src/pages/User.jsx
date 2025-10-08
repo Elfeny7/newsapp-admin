@@ -8,7 +8,8 @@ import toast from "react-hot-toast";
 export default function User() {
     const [users, setUsers] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
     const [form, setForm] = useState({
         name: "",
@@ -27,7 +28,7 @@ export default function User() {
             } catch (err) {
                 setError(err.message || "Gagal mengambil data users");
             } finally {
-                setLoading(false);
+                setInitialLoading(false);
             }
         };
 
@@ -106,7 +107,7 @@ export default function User() {
         setIsEditing(false);
     }
 
-    if (loading) return (
+    if (initialLoading) return (
         <div className="flex items-center justify-center h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
@@ -122,7 +123,8 @@ export default function User() {
                     placeholder="Name"
                     value={form.name}
                     onChange={handleChange}
-                    className="border p-2 w-full rounded"
+                    disabled={loading}
+                    className="border p-2 w-full rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
                 {error?.name && (
                     <p className="text-red-500 text-sm">
@@ -135,7 +137,8 @@ export default function User() {
                     placeholder="Email"
                     value={form.email}
                     onChange={handleChange}
-                    className="border p-2 w-full rounded"
+                    disabled={loading}
+                    className="border p-2 w-full rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
                 {error?.email && (
                     <p className="text-red-500 text-sm">
@@ -149,7 +152,8 @@ export default function User() {
                         placeholder="Password"
                         value={form.password}
                         onChange={handleChange}
-                        className="border p-2 w-full rounded"
+                        disabled={loading}
+                        className="border p-2 w-full rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
                     />
                     {error?.password && (
                         <p className="text-red-500 text-sm">
@@ -164,22 +168,29 @@ export default function User() {
                         {showPassword ? "🙈" : "👁"}
                     </button>
                 </div>
-                <select name="role" value={form.role} onChange={handleChange} className="border p-2 w-full rounded cursor-pointer">
+                <select name="role" value={form.role} onChange={handleChange} disabled={loading} className="border p-2 w-full rounded cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed">
                     <option value="superadmin">Superadmin</option>
                     <option value="journalist">Journalist</option>
                     <option value="viewer">Viewer</option>
                 </select>
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white px-3 py-2 rounded w-full cursor-pointer"
+                    disabled={loading}
+                    className={`bg-blue-500 text-white px-4 py-2 rounded w-full flex items-center justify-center cursor-pointer transition-all min-h-[40px] ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
+                        }`}
                 >
-                    {isEditing ? "Update User" : "Add User"}
+                    {loading ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                    ) : (
+                        <span>{isEditing ? "Update User" : "Add User"}</span>
+                    )}
                 </button>
                 {isEditing && (
                     <button
                         type="button"
                         onClick={handleCancel}
-                        className="bg-red-700 text-white px-3 py-2 rounded w-full cursor-pointer"
+                        disabled={loading}
+                        className={`text-white px-3 py-2 rounded w-full ${loading ? "bg-red-300 opacity-70 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 cursor-pointer"} `}
                     >
                         Cancel Edit
                     </button>
@@ -206,13 +217,21 @@ export default function User() {
                             <td className="border p-2 space-x-2">
                                 <button
                                     onClick={() => handleEdit(u)}
-                                    className="bg-yellow-500 text-white px-2 py-1 rounded cursor-pointer"
+                                    disabled={loading}
+                                    className={`px-2 py-1 rounded ${loading
+                                        ? "bg-yellow-300 text-white opacity-70 cursor-not-allowed"
+                                        : "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
+                                        }`}
                                 >
                                     Edit
                                 </button>
                                 <button
                                     onClick={() => handleDelete(u.id)}
-                                    className="bg-red-500 text-white px-2 py-1 rounded cursor-pointer"
+                                    disabled={loading}
+                                    className={`px-2 py-1 rounded ${loading
+                                            ? "bg-red-300 text-white opacity-70 cursor-not-allowed"
+                                            : "bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+                                        }`}
                                 >
                                     Delete
                                 </button>
