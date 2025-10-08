@@ -155,11 +155,6 @@ export default function User() {
                         disabled={loading}
                         className="border p-2 w-full rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
                     />
-                    {error?.password && (
-                        <p className="text-red-500 text-sm">
-                            {error.password[0]}
-                        </p>
-                    )}
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
@@ -168,6 +163,11 @@ export default function User() {
                         {showPassword ? "🙈" : "👁"}
                     </button>
                 </div>
+                {error?.password && (
+                    <p className="text-red-500 text-sm">
+                        {error.password[0]}
+                    </p>
+                )}
                 <select name="role" value={form.role} onChange={handleChange} disabled={loading} className="border p-2 w-full rounded cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed">
                     <option value="superadmin">Superadmin</option>
                     <option value="journalist">Journalist</option>
@@ -229,8 +229,8 @@ export default function User() {
                                     onClick={() => handleDelete(u.id)}
                                     disabled={loading}
                                     className={`px-2 py-1 rounded ${loading
-                                            ? "bg-red-300 text-white opacity-70 cursor-not-allowed"
-                                            : "bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+                                        ? "bg-red-300 text-white opacity-70 cursor-not-allowed"
+                                        : "bg-red-600 text-white hover:bg-red-700 cursor-pointer"
                                         }`}
                                 >
                                     Delete
