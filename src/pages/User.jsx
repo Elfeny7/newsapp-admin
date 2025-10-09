@@ -10,14 +10,19 @@ export default function User() {
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
+    const [globalError, setGlobalError] = useState(null);
+    const [search, setSearch] = useState("");
+    const [sortField, setSortField] = useState("id");
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
     const [form, setForm] = useState({
         name: "",
         email: "",
         password: "",
         role: "viewer",
     });
-    const [showPassword, setShowPassword] = useState(false);
-    const [globalError, setGlobalError] = useState(null);
 
     useEffect(() => {
         const loadUsers = async () => {
@@ -106,6 +111,32 @@ export default function User() {
         setIsEditing(false);
     }
 
+    const filteredUsers = users.filter(
+        (user) =>
+            user.name.toLowerCase().includes(search.toLowerCase()) ||
+            user.email.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const sortedUsers = [...filteredUsers].sort((a, b) => {
+        const fieldA = a[sortField];
+        const fieldB = b[sortField];
+
+        if (typeof fieldA === "number" && typeof fieldB === "number") {
+            return sortOrder === "asc" ? fieldA - fieldB : fieldB - fieldA;
+        }
+
+        const valueA = String(fieldA).toLowerCase();
+        const valueB = String(fieldB).toLowerCase();
+
+        if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+        if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+    });
+
+    const totalPages = Math.ceil(sortedUsers.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedUsers = sortedUsers.slice(startIndex, startIndex + itemsPerPage);
+
     if (initialLoading) return (
         <div className="flex items-center justify-center h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -189,25 +220,43 @@ export default function User() {
                         type="button"
                         onClick={handleCancel}
                         disabled={loading}
-                        className={`text-white px-3 py-2 rounded w-full ${loading ? "bg-red-300 opacity-70 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 cursor-pointer"} `}
+                        className={`text-white px-3 py-2 rounded w-full transition-colors ${loading ? "bg-red-300 opacity-70 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 cursor-pointer"} `}
                     >
                         Cancel Edit
                     </button>
                 )}
             </form>
-
+            <input
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border rounded p-2 mb-3 w-[20%]"
+            />
             <table className="table-fixed w-full border border-gray-300 text-sm text-left">
                 <thead className="bbg-gray-100 text-gray-700 uppercase text-xs">
                     <tr>
-                        <th className="w-[60px] border p-2 text-center">ID</th>
-                        <th className="w-[30%] border p-2">Name</th>
-                        <th className="w-[30%] border p-2">Email</th>
-                        <th className="w-[15%] border p-2">Role</th>
+                        <th className="w-[60px] border p-2 text-center cursor-pointer hover:bg-gray-50" onClick={() => {
+                            setSortField("id");
+                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        }}>ID {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
+                        <th className="w-[30%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                            setSortField("name");
+                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        }}>Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")} </th>
+                        <th className="w-[30%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                            setSortField("email");
+                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        }}>Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}</th>
+                        <th className="w-[15%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                            setSortField("role");
+                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        }}>Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}</th>
                         <th className="w-[15%] border p-2 text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 ">
-                    {users.map((u) => (
+                    {paginatedUsers.map((u) => (
                         <tr key={u.id} className="hover:bg-gray-50 transition">
                             <td className="border p-2 text-center">{u.id}</td>
                             <td className="border p-2">{u.name}</td>
@@ -217,7 +266,7 @@ export default function User() {
                                 <button
                                     onClick={() => handleEdit(u)}
                                     disabled={loading}
-                                    className={`px-2 py-1 rounded ${loading
+                                    className={`px-2 py-1 rounded transition-colors ${loading
                                         ? "bg-yellow-300 text-white opacity-70 cursor-not-allowed"
                                         : "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
                                         }`}
@@ -227,7 +276,7 @@ export default function User() {
                                 <button
                                     onClick={() => handleDelete(u.id)}
                                     disabled={loading}
-                                    className={`px-2 py-1 rounded ${loading
+                                    className={`px-2 py-1 rounded transition-colors ${loading
                                         ? "bg-red-300 text-white opacity-70 cursor-not-allowed"
                                         : "bg-red-600 text-white hover:bg-red-700 cursor-pointer"
                                         }`}
@@ -256,6 +305,21 @@ export default function User() {
                 <UserTable data={users} />
             </div>
             */}
+
+            <div className="flex justify-center mt-4 space-x-2">
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setCurrentPage(i + 1)}
+                        className={`px-3 py-1 rounded cursor-pointer transition-colors ${currentPage === i + 1
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200 hover:bg-gray-300"
+                            }`}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+            </div>
 
             <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
             {globalError && (
