@@ -265,7 +265,7 @@ export default function User() {
                     {paginatedUsers.map((u) => {
                         const isEditingThisRow = editingUserId === u.id;
                         return (
-                            <tr key={u.id} className={`hover:bg-gray-50 transition ${isEditingThisRow ? "bg-gray-100" : ""}`}>
+                            <tr key={u.id} className={`hover:bg-gray-50 transition ${isEditingThisRow ? "bg-gray-200" : ""}`}>
                                 <td className="border p-2 text-center">{u.id}</td>
                                 <td className="border p-2">{u.name}</td>
                                 <td className="border p-2">{u.email}</td>
