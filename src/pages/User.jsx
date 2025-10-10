@@ -113,8 +113,10 @@ export default function User() {
 
     const filteredUsers = users.filter(
         (user) =>
+            user.id.toString().toLowerCase().includes(search.toLowerCase()) ||
             user.name.toLowerCase().includes(search.toLowerCase()) ||
-            user.email.toLowerCase().includes(search.toLowerCase())
+            user.email.toLowerCase().includes(search.toLowerCase()) ||
+            user.role.toLowerCase().includes(search.toLowerCase())
     );
 
     const sortedUsers = [...filteredUsers].sort((a, b) => {
@@ -306,20 +308,35 @@ export default function User() {
             </div>
             */}
 
-            <div className="flex justify-center mt-4 space-x-2">
-                {Array.from({ length: totalPages }, (_, i) => (
+            {totalPages > 0 && (
+                <div className="flex justify-center items-center mt-4 space-x-2">
                     <button
-                        key={i}
-                        onClick={() => setCurrentPage(i + 1)}
-                        className={`px-3 py-1 rounded cursor-pointer transition-colors ${currentPage === i + 1
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-200 hover:bg-gray-300"
-                            }`}
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {i + 1}
+                        Previous
                     </button>
-                ))}
-            </div>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setCurrentPage(i + 1)}
+                            className={`px-3 py-1 rounded cursor-pointer transition-colors ${currentPage === i + 1
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 hover:bg-gray-300"
+                                }`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Next
+                    </button>
+                </div>)}
 
             <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
             {globalError && (
