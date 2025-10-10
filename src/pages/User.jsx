@@ -17,6 +17,7 @@ export default function User() {
     const [sortOrder, setSortOrder] = useState("asc");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
+    const [editingUserId, setEditingUserId] = useState(null);
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -58,6 +59,7 @@ export default function User() {
                 const freshUsers = await fetchAllUsers();
                 setUsers(freshUsers);
                 setIsEditing(false);
+                setEditingUserId(null);
                 toast.success("Update User Success");
             } else {
                 const newUser = await userCreate(form);
@@ -83,6 +85,7 @@ export default function User() {
             ...user,
             password: "",
         });
+        setEditingUserId(user.id);
         setIsEditing(true);
     };
 
@@ -108,6 +111,7 @@ export default function User() {
             password: "",
             role: "viewer",
         });
+        setEditingUserId(null);
         setIsEditing(false);
     }
 
@@ -258,36 +262,39 @@ export default function User() {
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 ">
-                    {paginatedUsers.map((u) => (
-                        <tr key={u.id} className="hover:bg-gray-50 transition">
-                            <td className="border p-2 text-center">{u.id}</td>
-                            <td className="border p-2">{u.name}</td>
-                            <td className="border p-2">{u.email}</td>
-                            <td className="border p-2">{u.role}</td>
-                            <td className="border p-2 space-x-2 text-center">
-                                <button
-                                    onClick={() => handleEdit(u)}
-                                    disabled={loading}
-                                    className={`px-2 py-1 rounded transition-colors ${loading
-                                        ? "bg-yellow-300 text-white opacity-70 cursor-not-allowed"
-                                        : "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
-                                        }`}
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(u.id)}
-                                    disabled={loading}
-                                    className={`px-2 py-1 rounded transition-colors ${loading
-                                        ? "bg-red-300 text-white opacity-70 cursor-not-allowed"
-                                        : "bg-red-600 text-white hover:bg-red-700 cursor-pointer"
-                                        }`}
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {paginatedUsers.map((u) => {
+                        const isEditingThisRow = editingUserId === u.id;
+                        return (
+                            <tr key={u.id} className={`hover:bg-gray-50 transition ${isEditingThisRow ? "bg-gray-100" : ""}`}>
+                                <td className="border p-2 text-center">{u.id}</td>
+                                <td className="border p-2">{u.name}</td>
+                                <td className="border p-2">{u.email}</td>
+                                <td className="border p-2">{u.role}</td>
+                                <td className="border p-2 space-x-2 text-center">
+                                    <button
+                                        onClick={() => handleEdit(u)}
+                                        disabled={loading}
+                                        className={`px-2 py-1 rounded transition-colors ${loading
+                                            ? "bg-yellow-300 text-white opacity-70 cursor-not-allowed"
+                                            : "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
+                                            }`}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(u.id)}
+                                        disabled={loading}
+                                        className={`px-2 py-1 rounded transition-colors ${loading
+                                            ? "bg-red-300 text-white opacity-70 cursor-not-allowed"
+                                            : "bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+                                            }`}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                     {users.length === 0 && (
                         <tr>
                             <td colSpan="5" className="text-center p-6 text-gray-500">
@@ -300,14 +307,6 @@ export default function User() {
                     )}
                 </tbody>
             </table>
-
-            {/*
-            <div className="p-6">
-                <h1 className="text-2xl font-semibold mb-4">User Management</h1>
-                <UserTable data={users} />
-            </div>
-            */}
-
             {totalPages > 0 && (
                 <div className="flex justify-center items-center mt-4 space-x-2">
                     <button
