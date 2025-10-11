@@ -18,6 +18,7 @@ export default function User() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
     const [editingUserId, setEditingUserId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -103,17 +104,17 @@ export default function User() {
         }
     };
 
-    const handleCancel = () => {
-        setError(null);
-        setForm({
-            name: "",
-            email: "",
-            password: "",
-            role: "viewer",
-        });
-        setEditingUserId(null);
-        setIsEditing(false);
-    }
+    // const handleCancel = () => {
+    //     setError(null);
+    //     setForm({
+    //         name: "",
+    //         email: "",
+    //         password: "",
+    //         role: "viewer",
+    //     });
+    //     setEditingUserId(null);
+    //     setIsEditing(false);
+    // }
 
     const filteredUsers = users.filter(
         (user) =>
@@ -151,94 +152,138 @@ export default function User() {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">User Management</h1>
-            <form onSubmit={handleSubmit} className="mb-6 space-y-2">
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    value={form.name}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className="border p-2 w-full rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
-                />
-                {error?.name && (
-                    <p className="text-red-500 text-sm">
-                        {error.name[0]}
-                    </p>
-                )}
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className="border p-2 w-full rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
-                />
-                {error?.email && (
-                    <p className="text-red-500 text-sm">
-                        {error.email[0]}
-                    </p>
-                )}
-                <div className="relative">
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        placeholder="Password"
-                        value={form.password}
-                        onChange={handleChange}
-                        disabled={loading}
-                        className="border p-2 w-full rounded disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                    >
-                        {showPassword ? "🙈" : "👁"}
-                    </button>
+            {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+                        <h2 className="text-xl font-semibold mb-4">
+                            {isEditing ? "Edit User" : "Add User"}
+                        </h2>
+
+                        <form onSubmit={handleSubmit} className="space-y-2">
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Name"
+                                value={form.name}
+                                onChange={handleChange}
+                                disabled={loading}
+                                className="border p-2 w-full rounded disabled:bg-gray-100"
+                            />
+                            {error?.name && (
+                                <p className="text-red-500 text-sm">{error.name[0]}</p>
+                            )}
+
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                value={form.email}
+                                onChange={handleChange}
+                                disabled={loading}
+                                className="border p-2 w-full rounded disabled:bg-gray-100"
+                            />
+                            {error?.email && (
+                                <p className="text-red-500 text-sm">{error.email[0]}</p>
+                            )}
+
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    placeholder="Password"
+                                    value={form.password}
+                                    onChange={handleChange}
+                                    disabled={loading}
+                                    className="border p-2 w-full rounded disabled:bg-gray-100"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                                >
+                                    {showPassword ? "🙈" : "👁"}
+                                </button>
+                            </div>
+                            {error?.password && (
+                                <p className="text-red-500 text-sm">{error.password[0]}</p>
+                            )}
+
+                            <select
+                                name="role"
+                                value={form.role}
+                                onChange={handleChange}
+                                disabled={loading}
+                                className="border p-2 w-full rounded cursor-pointer disabled:bg-gray-100"
+                            >
+                                <option value="superadmin">Superadmin</option>
+                                <option value="journalist">Journalist</option>
+                                <option value="viewer">Viewer</option>
+                            </select>
+
+                            <div className="flex gap-2 pt-2">
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`bg-blue-500 text-white px-4 py-2 rounded flex-1 ${loading
+                                        ? "opacity-70 cursor-not-allowed"
+                                        : "hover:bg-blue-600 cursor-pointer"
+                                        }`}
+                                >
+                                    {loading ? (
+                                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mx-auto"></div>
+                                    ) : (
+                                        <span>{isEditing ? "Update User" : "Add User"}</span>
+                                    )}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsModalOpen(false);
+                                        setIsEditing(false);
+                                        setEditingUserId(null);
+                                        setForm({ name: "", email: "", password: "", role: "viewer" });
+                                    }}
+                                    disabled={loading}
+                                    className={`bg-gray-300 text-gray-700 px-4 py-2 rounded flex-1 ${loading
+                                        ? "opacity-70 cursor-not-allowed"
+                                        : "hover:bg-gray-400 cursor-pointer"
+                                        }`}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                        >
+                            ✖
+                        </button>
+                    </div>
                 </div>
-                {error?.password && (
-                    <p className="text-red-500 text-sm">
-                        {error.password[0]}
-                    </p>
-                )}
-                <select name="role" value={form.role} onChange={handleChange} disabled={loading} className="border p-2 w-full rounded cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed">
-                    <option value="superadmin">Superadmin</option>
-                    <option value="journalist">Journalist</option>
-                    <option value="viewer">Viewer</option>
-                </select>
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`bg-blue-500 text-white px-4 py-2 rounded w-full flex items-center justify-center cursor-pointer transition-all min-h-[40px] ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
-                        }`}
-                >
-                    {loading ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                    ) : (
-                        <span>{isEditing ? "Update User" : "Add User"}</span>
-                    )}
-                </button>
-                {isEditing && (
+            )}
+            <div className="flex items-center justify-between mb-3">
+                <h1 className="text-2xl font-bold">User Management</h1>
+                <div className="flex items-center gap-2">
                     <button
-                        type="button"
-                        onClick={handleCancel}
-                        disabled={loading}
-                        className={`text-white px-3 py-2 rounded w-full transition-colors ${loading ? "bg-red-300 opacity-70 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 cursor-pointer"} `}
+                        onClick={() => setIsModalOpen(true)}
+                        className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
                     >
-                        Cancel Edit
+                        Add User
                     </button>
-                )}
-            </form>
-            <input
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="border rounded p-2 mb-3 w-[20%]"
-            />
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="border rounded p-2 w-[200px]"
+                    />
+
+                </div>
+            </div>
+
             <table className="table-fixed w-full border border-gray-300 text-sm text-left">
                 <thead className="bbg-gray-100 text-gray-700 uppercase text-xs">
                     <tr>
