@@ -6,6 +6,7 @@ import User from "./pages/User";
 import Categories from "./pages/Category";
 import News from "./pages/News";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import SidebarLayout from "./components/SidebarLayout";
 
 function App() {
   return (
@@ -14,21 +15,28 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
-          path="/"
           element={
             <ProtectedRoute>
+              <SidebarLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            path="/"
+            element={
               <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute>
-              <User />
-            </ProtectedRoute>
-          }
-        />
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute>
+                <User />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+
         <Route
           path="/categories"
           element={

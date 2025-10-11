@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 
 export default function Dashboard() {
-  const { user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   return (
     <div>

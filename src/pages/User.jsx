@@ -372,8 +372,6 @@ export default function User() {
                     </button>
                 </div>
             )}
-
-            <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
             {globalError && (
                 <ModalError
                     message={globalError}
