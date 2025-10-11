@@ -330,65 +330,49 @@ export default function User() {
                     )}
                 </tbody>
             </table>
-            {totalPages > 0 && (
-                <div className="flex justify-center items-center mt-4 space-x-2">
-                    <button
-                        onClick={() => setCurrentPage(1)}
-                        disabled={currentPage === 1}
-                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        First
-                    </button>
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-2 mt-4">
                     <button
                         onClick={() => setCurrentPage(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Previous
+                        Prev
                     </button>
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter(page => {
-                            return (
-                                page === 1 ||
-                                page === totalPages ||
-                                (page >= currentPage - 2 && page <= currentPage + 2)
-                            );
-                        })
+                        .filter(page =>
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 2 && page <= currentPage + 2)
+                        )
                         .map((page, index, filteredPages) => {
                             const prevPage = filteredPages[index - 1];
                             const showDots = prevPage && page - prevPage > 1;
                             return (
                                 <React.Fragment key={page}>
-                                    {showDots && <span className="px-2">...</span>}
+                                    {showDots && <span>…</span>}
                                     <button
                                         onClick={() => setCurrentPage(page)}
-                                        className={`px-3 py-1 rounded cursor-pointer transition-colors ${currentPage === page
-                                            ? "bg-blue-500 text-white"
-                                            : "bg-gray-200 hover:bg-gray-300"
+                                        className={`px-3 py-1 rounded transition-colors ${currentPage === page ? "bg-blue-500 text-white cursor-pointer" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
                                             }`}
                                     >
                                         {page}
                                     </button>
                                 </React.Fragment>
                             );
-                        })
-                    }
+                        })}
+
                     <button
                         onClick={() => setCurrentPage(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Next
                     </button>
-                    <button
-                        onClick={() => setCurrentPage(totalPages)}
-                        disabled={currentPage === totalPages}
-                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        Last
-                    </button>
                 </div>
             )}
+
             <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
             {globalError && (
                 <ModalError
