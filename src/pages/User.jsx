@@ -17,7 +17,6 @@ export default function User() {
     const [sortOrder, setSortOrder] = useState("asc");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
-    const [editingUserId, setEditingUserId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form, setForm] = useState({
         name: "",
@@ -60,7 +59,6 @@ export default function User() {
                 const freshUsers = await fetchAllUsers();
                 setUsers(freshUsers);
                 setIsEditing(false);
-                setEditingUserId(null);
                 toast.success("Update User Success");
             } else {
                 const newUser = await userCreate(form);
@@ -81,12 +79,12 @@ export default function User() {
 
     const handleEdit = (user) => {
         setError(null);
+        setIsModalOpen(true);
         setForm({
             ...form,
             ...user,
             password: "",
         });
-        setEditingUserId(user.id);
         setIsEditing(true);
     };
 
@@ -98,23 +96,11 @@ export default function User() {
             setUsers(users.filter((u) => u.id !== id));
             toast.success("Delete User Success");
         } catch (err) {
-            setError(err.message || "Gagal menghapus user");
+            setGlobalError(err.message || "Terjadi kesalahan saat menyimpan data");
         } finally {
             setLoading(false);
         }
     };
-
-    // const handleCancel = () => {
-    //     setError(null);
-    //     setForm({
-    //         name: "",
-    //         email: "",
-    //         password: "",
-    //         role: "viewer",
-    //     });
-    //     setEditingUserId(null);
-    //     setIsEditing(false);
-    // }
 
     const filteredUsers = users.filter(
         (user) =>
@@ -241,7 +227,6 @@ export default function User() {
                                     onClick={() => {
                                         setIsModalOpen(false);
                                         setIsEditing(false);
-                                        setEditingUserId(null);
                                         setForm({ name: "", email: "", password: "", role: "viewer" });
                                     }}
                                     disabled={loading}
@@ -254,18 +239,11 @@ export default function User() {
                                 </button>
                             </div>
                         </form>
-
-                        <button
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
-                        >
-                            ✖
-                        </button>
                     </div>
                 </div>
             )}
             <div className="flex items-center justify-between mb-3">
-                <h1 className="text-2xl font-bold">User Management</h1>
+                <h1 className="text-3xl font-bold">User Management</h1>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setIsModalOpen(true)}
@@ -308,9 +286,8 @@ export default function User() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 ">
                     {paginatedUsers.map((u) => {
-                        const isEditingThisRow = editingUserId === u.id;
                         return (
-                            <tr key={u.id} className={`hover:bg-gray-50 transition ${isEditingThisRow ? "bg-gray-200" : ""}`}>
+                            <tr key={u.id} className="hover:bg-gray-50 transition">
                                 <td className="border p-2 text-center">{u.id}</td>
                                 <td className="border p-2">{u.name}</td>
                                 <td className="border p-2">{u.email}</td>
