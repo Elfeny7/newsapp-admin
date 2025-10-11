@@ -64,7 +64,7 @@ export default function Login() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
                     >
-                        {showPassword ? "🙈" : "👁"}
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                 </div>
 

@@ -4,6 +4,7 @@ import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/u
 import ModalError from "../components/ModalError";
 import toast from "react-hot-toast";
 import React from "react";
+import { Eye, EyeOff, SquarePen, Trash2, ChevronDown } from "lucide-react";
 
 export default function User() {
     const [users, setUsers] = useState([]);
@@ -17,7 +18,7 @@ export default function User() {
     const [sortField, setSortField] = useState("id");
     const [sortOrder, setSortOrder] = useState("asc");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form, setForm] = useState({
         name: "",
@@ -188,24 +189,29 @@ export default function User() {
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                                 >
-                                    {showPassword ? "🙈" : "👁"}
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                 </button>
                             </div>
                             {error?.password && (
                                 <p className="text-red-500 text-sm">{error.password[0]}</p>
                             )}
-
-                            <select
-                                name="role"
-                                value={form.role}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="border p-2 w-full rounded cursor-pointer disabled:bg-gray-100"
-                            >
-                                <option value="superadmin">Superadmin</option>
-                                <option value="journalist">Journalist</option>
-                                <option value="viewer">Viewer</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    name="role"
+                                    value={form.role}
+                                    onChange={handleChange}
+                                    disabled={loading}
+                                    className="appearance-none border p-2 w-full rounded cursor-pointer disabled:bg-gray-100"
+                                >
+                                    <option value="superadmin">Superadmin</option>
+                                    <option value="journalist">Journalist</option>
+                                    <option value="viewer">Viewer</option>
+                                </select>
+                                <ChevronDown
+                                    size={18}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                                />
+                            </div>
 
                             <div className="flex gap-2 pt-2">
                                 <button
@@ -278,11 +284,11 @@ export default function User() {
                             setSortField("email");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[15%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[20%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
                             setSortField("role");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[15%] border p-2 text-center">Action</th>
+                        <th className="w-[10%] border p-2 text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 ">
@@ -293,26 +299,20 @@ export default function User() {
                                 <td className="border p-2">{u.name}</td>
                                 <td className="border p-2">{u.email}</td>
                                 <td className="border p-2">{u.role}</td>
-                                <td className="border p-2 space-x-2 text-center">
+                                <td className="border p-2 space-x-4 text-center">
                                     <button
                                         onClick={() => handleEdit(u)}
                                         disabled={loading}
-                                        className={`px-2 py-1 rounded transition-colors ${loading
-                                            ? "bg-yellow-300 text-white opacity-70 cursor-not-allowed"
-                                            : "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
-                                            }`}
+                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
                                     >
-                                        Edit
+                                        <SquarePen size={20} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(u.id)}
                                         disabled={loading}
-                                        className={`px-2 py-1 rounded transition-colors ${loading
-                                            ? "bg-red-300 text-white opacity-70 cursor-not-allowed"
-                                            : "bg-red-600 text-white hover:bg-red-700 cursor-pointer"
-                                            }`}
+                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
                                     >
-                                        Delete
+                                        <Trash2 size={20} />
                                     </button>
                                 </td>
                             </tr>
