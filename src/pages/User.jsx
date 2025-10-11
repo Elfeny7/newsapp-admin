@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/userService";
 import ModalError from "../components/ModalError";
 import toast from "react-hot-toast";
+import React from "react";
 
 export default function User() {
     const [users, setUsers] = useState([]);
@@ -332,24 +333,46 @@ export default function User() {
             {totalPages > 0 && (
                 <div className="flex justify-center items-center mt-4 space-x-2">
                     <button
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        First
+                    </button>
+                    <button
                         onClick={() => setCurrentPage(currentPage - 1)}
                         disabled={currentPage === 1}
                         className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Previous
                     </button>
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => setCurrentPage(i + 1)}
-                            className={`px-3 py-1 rounded cursor-pointer transition-colors ${currentPage === i + 1
-                                ? "bg-blue-500 text-white"
-                                : "bg-gray-200 hover:bg-gray-300"
-                                }`}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(page => {
+                            return (
+                                page === 1 ||
+                                page === totalPages ||
+                                (page >= currentPage - 2 && page <= currentPage + 2)
+                            );
+                        })
+                        .map((page, index, filteredPages) => {
+                            const prevPage = filteredPages[index - 1];
+                            const showDots = prevPage && page - prevPage > 1;
+                            return (
+                                <React.Fragment key={page}>
+                                    {showDots && <span className="px-2">...</span>}
+                                    <button
+                                        onClick={() => setCurrentPage(page)}
+                                        className={`px-3 py-1 rounded cursor-pointer transition-colors ${currentPage === page
+                                            ? "bg-blue-500 text-white"
+                                            : "bg-gray-200 hover:bg-gray-300"
+                                            }`}
+                                    >
+                                        {page}
+                                    </button>
+                                </React.Fragment>
+                            );
+                        })
+                    }
                     <button
                         onClick={() => setCurrentPage(currentPage + 1)}
                         disabled={currentPage === totalPages}
@@ -357,8 +380,15 @@ export default function User() {
                     >
                         Next
                     </button>
-                </div>)}
-
+                    <button
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1 rounded cursor-pointer transition-colors bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Last
+                    </button>
+                </div>
+            )}
             <Link to="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
             {globalError && (
                 <ModalError
