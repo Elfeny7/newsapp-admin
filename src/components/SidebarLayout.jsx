@@ -50,7 +50,7 @@ export default function SidebarLayout() {
                 </div>
             </div>
             <main className="flex-1 transition-all duration-300">
-                <div className="m-6 bg-white rounded-2xl">
+                <div className="m-6 bg-white rounded-2xl shadow-md">
                     <Outlet />
                 </div>
             </main>

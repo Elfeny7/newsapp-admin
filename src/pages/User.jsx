@@ -272,19 +272,19 @@ export default function User() {
             <table className="table-fixed w-full border border-gray-300 text-sm text-left">
                 <thead className="bbg-gray-100 text-gray-700 uppercase text-xs">
                     <tr>
-                        <th className="w-[60px] border p-2 text-center cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[100px] border p-2 text-center cursor-pointer hover:bg-gray-50" onClick={() => {
                             setSortField("id");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>ID {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[30%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[35%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
                             setSortField("name");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")} </th>
-                        <th className="w-[30%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[35%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
                             setSortField("email");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[20%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[15%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
                             setSortField("role");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}</th>
