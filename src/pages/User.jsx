@@ -4,7 +4,7 @@ import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/u
 import ModalError from "../components/ModalError";
 import toast from "react-hot-toast";
 import React from "react";
-import { Eye, EyeOff, SquarePen, Trash2, ChevronDown } from "lucide-react";
+import { Eye, EyeOff, SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function User() {
     const [users, setUsers] = useState([]);
@@ -335,9 +335,9 @@ export default function User() {
                     <button
                         onClick={() => setCurrentPage(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="px-3 py-1 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Prev
+                        <ChevronLeft size={20} />
                     </button>
 
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -366,9 +366,9 @@ export default function User() {
                     <button
                         onClick={() => setCurrentPage(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-1 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Next
+                        <ChevronRight size={20} />
                     </button>
                 </div>
             )}
