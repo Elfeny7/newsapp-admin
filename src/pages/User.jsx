@@ -142,7 +142,7 @@ export default function User() {
         <div className="p-6">
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+                    <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
                         <h2 className="text-xl font-semibold mb-4">
                             {isEditing ? "Edit User" : "Add User"}
                         </h2>
@@ -155,7 +155,7 @@ export default function User() {
                                 value={form.name}
                                 onChange={handleChange}
                                 disabled={loading}
-                                className="border p-2 w-full rounded disabled:bg-gray-100"
+                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                             />
                             {error?.name && (
                                 <p className="text-red-500 text-sm">{error.name[0]}</p>
@@ -168,7 +168,7 @@ export default function User() {
                                 value={form.email}
                                 onChange={handleChange}
                                 disabled={loading}
-                                className="border p-2 w-full rounded disabled:bg-gray-100"
+                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                             />
                             {error?.email && (
                                 <p className="text-red-500 text-sm">{error.email[0]}</p>
@@ -182,7 +182,7 @@ export default function User() {
                                     value={form.password}
                                     onChange={handleChange}
                                     disabled={loading}
-                                    className="border p-2 w-full rounded disabled:bg-gray-100"
+                                    className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                                 />
                                 <button
                                     type="button"
@@ -201,7 +201,7 @@ export default function User() {
                                     value={form.role}
                                     onChange={handleChange}
                                     disabled={loading}
-                                    className="appearance-none border p-2 w-full rounded cursor-pointer disabled:bg-gray-100"
+                                    className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed"
                                 >
                                     <option value="superadmin">Superadmin</option>
                                     <option value="journalist">Journalist</option>
@@ -217,7 +217,7 @@ export default function User() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className={`bg-blue-500 text-white px-4 py-2 rounded flex-1 ${loading
+                                    className={`bg-blue-500 text-white px-4 py-2 rounded-lg flex-1 ${loading
                                         ? "opacity-70 cursor-not-allowed"
                                         : "hover:bg-blue-600 cursor-pointer"
                                         }`}
@@ -237,9 +237,9 @@ export default function User() {
                                         setForm({ name: "", email: "", password: "", role: "viewer" });
                                     }}
                                     disabled={loading}
-                                    className={`bg-gray-300 text-gray-700 px-4 py-2 rounded flex-1 ${loading
+                                    className={`bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex-1 ${loading
                                         ? "opacity-70 cursor-not-allowed"
-                                        : "hover:bg-gray-400 cursor-pointer"
+                                        : "hover:bg-gray-300 cursor-pointer"
                                         }`}
                                 >
                                     Cancel
@@ -249,12 +249,12 @@ export default function User() {
                     </div>
                 </div>
             )}
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-5">
                 <h1 className="text-3xl font-bold">User Management</h1>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
+                        className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
                     >
                         Add User
                     </button>
@@ -263,43 +263,42 @@ export default function User() {
                         placeholder="Search..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="border rounded p-2 w-[200px]"
+                        className="rounded-lg p-2 w-[200px] bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-300 focus:outline-none focus:border-gray-300"
                     />
-
                 </div>
             </div>
 
-            <table className="table-fixed w-full border border-gray-300 text-sm text-left">
-                <thead className="bbg-gray-100 text-gray-700 uppercase text-xs">
+            <table className="table-fixed w-full text-sm text-left">
+                <thead className="bg-blue-200 text-gray-700 border border-blue-300 uppercase text-xs">
                     <tr>
-                        <th className="w-[100px] border p-2 text-center cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[100px] p-2 py-3 text-center cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("id");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>ID {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[35%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[35%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("name");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")} </th>
-                        <th className="w-[35%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[35%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("email");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[15%] border p-2 cursor-pointer hover:bg-gray-50" onClick={() => {
+                        <th className="w-[15%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("role");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] border p-2 text-center">Action</th>
+                        <th className="w-[10%] p-2 text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 ">
+                <tbody className="divide-y divide-blue-100 ">
                     {paginatedUsers.map((u) => {
                         return (
-                            <tr key={u.id} className="hover:bg-gray-50 transition">
-                                <td className="border p-2 text-center">{u.id}</td>
-                                <td className="border p-2">{u.name}</td>
-                                <td className="border p-2">{u.email}</td>
-                                <td className="border p-2">{u.role}</td>
-                                <td className="border p-2 space-x-4 text-center">
+                            <tr key={u.id} className="hover:bg-blue-100 transition">
+                                <td className="p-2 text-center">{u.id}</td>
+                                <td className="p-2">{u.name}</td>
+                                <td className="p-2">{u.email}</td>
+                                <td className="p-2">{u.role}</td>
+                                <td className="p-2 space-x-4 text-center">
                                     <button
                                         onClick={() => handleEdit(u)}
                                         disabled={loading}

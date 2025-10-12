@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/authtemp/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -37,10 +38,10 @@ export default function Login() {
     );
 
     return (
-        <div className="flex h-screen justify-center items-center">
+        <div className="flex h-screen bg-gray-100 justify-center items-center">
             <form
                 onSubmit={handleSubmit}
-                className="p-6 bg-white shadow rounded w-80 relative"
+                className="p-6 bg-white shadow-md rounded w-80 relative"
             >
                 <h1 className="text-xl mb-4">Login Admin</h1>
                 {error && <p className="text-red-500">{error}</p>}
@@ -62,7 +63,7 @@ export default function Login() {
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                     >
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>

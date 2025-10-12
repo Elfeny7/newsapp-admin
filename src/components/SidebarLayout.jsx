@@ -17,7 +17,7 @@ export default function SidebarLayout() {
     ];
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gray-200">
             <div className={`relative transition-all duration-300 ease-in-out bg-white shadow-lg ${isOpen || isPinned ? "w-64" : "w-16"}`}
                 onMouseEnter={() => !isPinned && setIsOpen(true)}
                 onMouseLeave={() => !isPinned && setIsOpen(false)}
