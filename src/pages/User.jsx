@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/userService";
 import ModalError from "../components/ModalError";
+import ModalConfirm from "../components/ModalConfirm";
 import toast from "react-hot-toast";
 import React from "react";
 import { Eye, EyeOff, SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
@@ -20,6 +21,8 @@ export default function User() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -307,7 +310,10 @@ export default function User() {
                                         <SquarePen size={20} />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(u.id)}
+                                        onClick={() => {
+                                            setSelectedId(u.id);
+                                            setConfirmOpen(true);
+                                        }}
                                         disabled={loading}
                                         className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
                                     >
@@ -375,6 +381,16 @@ export default function User() {
                 <ModalError
                     message={globalError}
                     onClose={() => setGlobalError(null)}
+                />
+            )}
+            {confirmOpen && (
+                <ModalConfirm
+                    message="Apakah Anda yakin ingin menghapus user ini?"
+                    onConfirm={async () => {
+                        setConfirmOpen(false);
+                        await handleDelete(selectedId);
+                    }}
+                    onCancel={() => setConfirmOpen(false)}
                 />
             )}
         </div>
