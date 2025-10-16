@@ -100,7 +100,7 @@ export default function User() {
             setUsers(users.filter((u) => u.id !== id));
             toast.success("Delete User Success");
         } catch (err) {
-            setGlobalError(err.message || "Terjadi kesalahan saat menyimpan data");
+            setGlobalError(err.message || "Gagal menghapus user");
         } finally {
             setLoading(false);
         }
