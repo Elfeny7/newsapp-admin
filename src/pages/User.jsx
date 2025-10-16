@@ -86,7 +86,6 @@ export default function User() {
         setError(null);
         setIsModalOpen(true);
         setForm({
-            ...form,
             ...user,
             password: "",
         });
