@@ -76,7 +76,7 @@ export default function User() {
             if (err.code == 422)
                 setError(err.errors);
             else
-                setGlobalError(err.message || "Terjadi kesalahan saat menyimpan data");
+                setGlobalError(err.message || "Gagal menghapus user");
         } finally {
             setLoading(false);
         }
