@@ -30,9 +30,13 @@ function App() {
           <Route
             path="/users"
             element={
-              <ProtectedRoute>
-                <User />
-              </ProtectedRoute>
+              <User />
+            }
+          />
+          <Route
+            path="/categories"
+            element={
+              <Categories />
             }
           />
         </Route>

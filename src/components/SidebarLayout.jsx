@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Circle, CircleOff, House, Users } from "lucide-react";
+import { Menu, Circle, CircleOff, House, Users, LayoutGrid, Newspaper } from "lucide-react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 
 export default function SidebarLayout() {
@@ -14,6 +14,7 @@ export default function SidebarLayout() {
     const menuItems = [
         { path: "/", label: "Dashboard", icon: <House size={20} /> },
         { path: "/users", label: "Users", icon: <Users size={20} /> },
+        { path: "/categories", label: "Categories", icon: <LayoutGrid size={20} /> },
     ];
 
     return (
