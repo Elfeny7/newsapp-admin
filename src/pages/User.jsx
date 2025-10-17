@@ -85,11 +85,11 @@ export default function User() {
     const handleEdit = (user) => {
         setError(null);
         setIsModalOpen(true);
+        setIsEditing(true);
         setForm({
             ...user,
             password: "",
         });
-        setIsEditing(true);
     };
 
     const handleDelete = async (id) => {
@@ -244,7 +244,7 @@ export default function User() {
                                         : "hover:bg-gray-300 cursor-pointer"
                                         }`}
                                 >
-                                    Cancel
+                                    Close
                                 </button>
                             </div>
                         </form>
@@ -386,8 +386,8 @@ export default function User() {
                 <ModalConfirm
                     message="Apakah Anda yakin ingin menghapus user ini?"
                     onConfirm={async () => {
-                        setConfirmOpen(false);
                         await handleDelete(selectedId);
+                        setConfirmOpen(false);
                     }}
                     onCancel={() => setConfirmOpen(false)}
                 />
