@@ -39,24 +39,13 @@ function App() {
               <Categories />
             }
           />
-        </Route>
-
-        <Route
-          path="/categories"
-          element={
-            <ProtectedRoute>
-              <Categories />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/news"
-          element={
-            <ProtectedRoute>
+          <Route
+            path="/news"
+            element={
               <News />
-            </ProtectedRoute>
-          }
-        />
+            }
+          />
+        </Route>
       </Routes>
     </>
   );

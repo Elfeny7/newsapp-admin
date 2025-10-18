@@ -15,6 +15,7 @@ export default function SidebarLayout() {
         { path: "/", label: "Dashboard", icon: <House size={20} /> },
         { path: "/users", label: "Users", icon: <Users size={20} /> },
         { path: "/categories", label: "Categories", icon: <LayoutGrid size={20} /> },
+        { path: "/news", label: "News", icon: <Newspaper size={20} /> },
     ];
 
     return (
