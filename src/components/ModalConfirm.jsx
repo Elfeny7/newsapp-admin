@@ -23,8 +23,8 @@ export default function ModalConfirm({ message, onConfirm, onCancel }) {
         <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className={`${loading ? "cursor-not-allowed opacity-60" : "cursor-pointer"
-              } bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400`}
+            className={`${loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+              } bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300`}
           >
             Close
           </button>
