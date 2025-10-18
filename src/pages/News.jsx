@@ -256,7 +256,7 @@ export default function News() {
                             )}
 
                             <div className="relative">
-                                <select name="category_id" value={form.parent_id} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
+                                <select name="category_id" value={form.category_id} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
                                     <option value="">Pilih Kategori</option>
                                     {categories.map((c) => {
                                         if (c.status === "inactive") return null;
