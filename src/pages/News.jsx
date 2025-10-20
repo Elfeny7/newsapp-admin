@@ -346,31 +346,31 @@ export default function News() {
                 </div>
             </div>
 
-            <table className="w-full border border-gray-300">
+            <table className="table-fixed w-full text-sm text-left">
                 <thead className="bg-blue-200 text-gray-700 border border-blue-300 uppercase text-xs">
                     <tr>
                         <th className="w-[50px] p-2 py-3 text-center cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("id");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>ID {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[15%] p-2">Image</th>
-                        <th className="w-[17%] p-2 text-left cursor-pointer hover:bg-blue-300" onClick={() => {
+                        <th className="w-[15%] p-2 text-center">Image</th>
+                        <th className="w-[17%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("title");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Title {sortField === "title" && (sortOrder === "asc" ? "↑" : "↓")} </th>
-                        <th className="w-[17%] text-left p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
+                        <th className="w-[17%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("slug");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Slug {sortField === "slug" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[20%] text-left p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
+                        <th className="w-[20%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("excerpt");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Excerpt {sortField === "excerpt" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] text-left p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
+                        <th className="w-[10%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("category_id");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Category {sortField === "category_id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[5%] text-left p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
+                        <th className="w-[5%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
                             setSortField("status");
                             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                         }}>Status {sortField === "status" && (sortOrder === "asc" ? "↑" : "↓")}</th>
@@ -421,13 +421,6 @@ export default function News() {
                                     <span>🫥</span>
                                     <span className="mt-2">No news found</span>
                                 </div>
-                            </td>
-                        </tr>
-                    )}
-                    {news.length === 0 && (
-                        <tr>
-                            <td colSpan="4" className="text-center p-4 text-gray-500">
-                                No news found
                             </td>
                         </tr>
                     )}
