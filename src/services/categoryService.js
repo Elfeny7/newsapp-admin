@@ -1,19 +1,19 @@
 import { categoryIndexApi, categoryCreateApi, categoryDeleteApi, categoryUpdateApi } from "../api/category";
+import ApiError from "../utils/ApiError";
 
-export const fetchAllCategories = async() => {
-    return await categoryIndexApi();
+export const fetchAllCategories = async () => {
+  return await categoryIndexApi();
 };
 
 export const categoryCreate = async (payload) => {
-  if (!payload.name || !payload.slug) {
-    throw new Error("Nama dan Slug wajib diisi");
-  }
-
   try {
     const newCategory = await categoryCreateApi(payload);
     return newCategory;
   } catch (err) {
-    throw new Error(err.response?.data?.message || "Gagal membuat kategori");
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Gagal membuat kategori";
+    const errors = err.response?.data?.errors || null;
+    throw new ApiError(message, code, errors);
   }
 };
 
@@ -21,18 +21,19 @@ export const categoryDelete = async (id) => {
   try {
     await categoryDeleteApi(id);
   } catch (err) {
-    throw new Error(err.response?.data?.message || "Gagal menghapus kategori");
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Gagal menghapus kategori";
+    throw new ApiError(message, code);
   }
 };
 
 export const categoryUpdate = async (id, payload) => {
-  if (!payload.slug) {
-    throw new Error("Slug wajib diisi");
-  }
-
   try {
     await categoryUpdateApi(id, payload);
   } catch (err) {
-    throw new Error(err.response?.data?.message || "Gagal mengupdate kategori");
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Gagal memperbarui kategori";
+    const errors = err.response?.data?.errors || null;
+    throw new ApiError(message, code, errors);
   }
 }

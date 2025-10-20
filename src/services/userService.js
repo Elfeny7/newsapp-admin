@@ -1,4 +1,5 @@
 import { userIndexApi, userCreateApi, userDeleteApi, userUpdateApi } from "../api/user";
+import ApiError from "../utils/ApiError";
 
 export const fetchAllUsers = async () => {
   return await userIndexApi();
@@ -12,7 +13,7 @@ export const userCreate = async (payload) => {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Gagal membuat user";
     const errors = err.response?.data?.errors || null;
-    throw { code, message, errors };
+    throw new ApiError(message, code, errors);
   }
 };
 
@@ -22,7 +23,7 @@ export const userDelete = async (id) => {
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Gagal menghapus user";
-    throw { code, message };
+    throw new ApiError(message, code);
   }
 };
 
@@ -31,8 +32,8 @@ export const userUpdate = async (id, payload) => {
     await userUpdateApi(id, payload);
   } catch (err) {
     const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal membuat user";
+    const message = err.response?.data?.message || "Gagal memperbarui user";
     const errors = err.response?.data?.errors || null;
-    throw { code, message, errors };
+    throw new ApiError(message, code, errors);
   }
 }

@@ -1,5 +1,6 @@
 import { newsIndexApi, newsCreateApi, newsDeleteApi, newsUpdateApi } from "../api/news";
 import { STORAGE_BASE_URL } from "../config/env";
+import ApiError from "../utils/ApiError";
 
 export const BASE_URL = `${STORAGE_BASE_URL}/news/`;
 
@@ -8,17 +9,16 @@ export const fetchAllNews = async () => {
 };
 
 export const newsCreate = async (form) => {
-  if (!form.title || !form.slug) {
-    throw new Error("Judul dan Slug wajib diisi");
-  }
-
   try {
     const formData = new FormData();
     Object.entries(form).forEach(([key, val]) => formData.append(key, val));
     const newNews = await newsCreateApi(formData);
     return newNews;
   } catch (err) {
-    throw new Error(err.response?.data?.message || "Gagal membuat berita");
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Gagal membuat berita";
+    const errors = err.response?.data?.errors || null;
+    throw new ApiError(message, code, errors);
   }
 };
 
@@ -26,15 +26,13 @@ export const newsDelete = async (id) => {
   try {
     await newsDeleteApi(id);
   } catch (err) {
-    throw new Error(err.response?.data?.message || "Gagal menghapus berita");
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Gagal menghapus berita";
+    throw new ApiError(message, code);
   }
 };
 
 export const newsUpdate = async (id, form) => {
-  if (!form.slug) {
-    throw new Error("Slug wajib diisi");
-  }
-
   try {
     const formData = new FormData();
 
@@ -46,6 +44,9 @@ export const newsUpdate = async (id, form) => {
     formData.append("_method", "PUT");
     await newsUpdateApi(id, formData);
   } catch (err) {
-    throw new Error(err.response?.data?.message || "Gagal mengupdate berita");
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Gagal memperbarui berita";
+    const errors = err.response?.data?.errors || null;
+    throw new ApiError(message, code, errors);
   }
 }

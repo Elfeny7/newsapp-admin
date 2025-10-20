@@ -213,8 +213,8 @@ export default function News() {
                                 disabled={loading}
                                 className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                             />
-                            {error?.name && (
-                                <p className="text-red-500 text-sm">{error.name[0]}</p>
+                            {error?.title && (
+                                <p className="text-red-500 text-sm">{error.title[0]}</p>
                             )}
 
                             <input
@@ -257,7 +257,7 @@ export default function News() {
 
                             <div className="relative">
                                 <select name="category_id" value={form.category_id} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
-                                    <option value="">Pilih Kategori</option>
+                                    <option value="" disabled hidden>Pilih Kategori</option>
                                     {categories.map((c) => {
                                         if (c.status === "inactive") return null;
                                         return (
@@ -272,6 +272,9 @@ export default function News() {
                                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
                                 />
                             </div>
+                            {error?.category_id && (
+                                <p className="text-red-500 text-sm">{error.category_id[0]}</p>
+                            )}
                             <div className="relative">
                                 <select name="status" value={form.status} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
                                     <option value="draft">Draft</option>
