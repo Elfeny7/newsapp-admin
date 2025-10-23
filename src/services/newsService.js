@@ -1,4 +1,4 @@
-import { newsIndexApi, newsCreateApi, newsDeleteApi, newsUpdateApi } from "../api/news";
+import { newsIndexApi, newsCreateApi, newsDeleteApi, newsUpdateApi, newsShowApi } from "../api/news";
 import { STORAGE_BASE_URL } from "../config/env";
 import ApiError from "../utils/ApiError";
 
@@ -49,4 +49,8 @@ export const newsUpdate = async (id, form) => {
     const errors = err.response?.data?.errors || null;
     throw new ApiError(message, code, errors);
   }
+}
+
+export const fetchNewsDetail = async (id) => {
+  return await newsShowApi(id);
 }

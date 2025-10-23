@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { fetchAllNews, newsCreate, newsDelete, newsUpdate, BASE_URL } from "../services/newsService";
 import { fetchAllCategories } from "../services/categoryService";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
 import toast from "react-hot-toast";
 import React from "react";
-import { SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 
 export default function News() {
     const [news, setNews] = useState([]);
@@ -403,6 +404,7 @@ export default function News() {
                                     >
                                         <SquarePen size={20} />
                                     </button>
+                                    <Link to={`${n.id}`}><Eye size={20} /></Link>
                                     <button
                                         onClick={() => {
                                             setSelectedId(n.id);

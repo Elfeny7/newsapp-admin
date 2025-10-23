@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import User from "./pages/User";
 import Categories from "./pages/Category";
 import News from "./pages/News";
+import NewsDetail from "./pages/NewsDetail";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import SidebarLayout from "./components/SidebarLayout";
 
@@ -43,6 +44,12 @@ function App() {
             path="/news"
             element={
               <News />
+            }
+          />
+          <Route
+            path="/news/:id"
+            element={
+              <NewsDetail />
             }
           />
         </Route>

@@ -12,5 +12,7 @@ export const newsDeleteApi = async (id) => {
 };
 
 export const newsUpdateApi = async (id, formData) => {
-   return api.post(`/news/${id}?_method=PUT`, formData);
+    return api.post(`/news/${id}?_method=PUT`, formData);
 };
+
+export const newsShowApi = async (id) => api.get(`/news/${id}`).then(res => res.data.data);
