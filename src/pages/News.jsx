@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fetchAllNews, newsCreate, newsDelete, newsUpdate, BASE_URL } from "../services/newsService";
 import { fetchAllCategories } from "../services/categoryService";
 import ModalError from "../components/ModalError";
@@ -33,6 +33,7 @@ export default function News() {
         category_id: "",
         status: "published",
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadNews = async () => {
@@ -116,6 +117,11 @@ export default function News() {
         setForm({ ...news });
     };
 
+    const handleDetail = (news) => {
+        setError(null);
+        navigate(`/news/${news.id}`);
+    };
+
     const handleDelete = async (id) => {
         setError(null);
         try {
@@ -129,6 +135,10 @@ export default function News() {
             setLoading(false);
         }
     };
+
+    const handleAddUser = () => {
+        navigate("/news/create");
+    }
 
     const filteredNews = news.filter((news) => {
         const category = categories.find((c) => c.id === news.category_id);
@@ -335,7 +345,7 @@ export default function News() {
                 <h1 className="text-3xl font-bold">News Management</h1>
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => handleAddUser()}
                         className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
                     >
                         Add News
@@ -404,7 +414,13 @@ export default function News() {
                                     >
                                         <SquarePen size={20} />
                                     </button>
-                                    <Link to={`${n.id}`}><Eye size={20} /></Link>
+                                    <button
+                                        onClick={() => handleDetail(n)}
+                                        disabled={loading}
+                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
+                                    >
+                                        <Eye size={20} />
+                                    </button>
                                     <button
                                         onClick={() => {
                                             setSelectedId(n.id);

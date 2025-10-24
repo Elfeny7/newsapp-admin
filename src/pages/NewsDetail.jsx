@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchNewsDetail } from "../services/newsService";
 import { fetchAllCategories } from "../services/categoryService";
 import { fetchAllNews, newsCreate, newsUpdate, BASE_URL } from "../services/newsService";
 import toast from "react-hot-toast";
-import { ChevronDown} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import ModalError from "../components/ModalError";
 
-export default function NewsDetail() {
+export default function NewsDetail({ mode }) {
     const { id } = useParams();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -24,33 +24,34 @@ export default function NewsDetail() {
         category_id: "",
         status: "published",
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const loadNewsDetail = async () => {
+        const loadData = async () => {
             try {
-                const data = await fetchNewsDetail(id);
-                setForm(data);
+                setInitialLoading(true);
+                if (mode === "create") {
+                    setIsEditing(false);
+                    const categories = await fetchAllCategories();
+                    setCategories(categories);
+                    return;
+                }
+                setIsEditing(true);
+                const [newsData, categoriesData] = await Promise.all([
+                    fetchNewsDetail(id),
+                    fetchAllCategories()
+                ]);
+                setForm(newsData);
+                setCategories(categoriesData);
             } catch (err) {
-                setError(err.message || "Gagal mengambil data berita");
+                setError(err.message || "Gagal memuat data");
             } finally {
                 setInitialLoading(false);
             }
         };
 
-        const loadCategories = async () => {
-            try {
-                const data = await fetchAllCategories();
-                setCategories(data);
-            } catch (err) {
-                setError(err.message || "Gagal mengambil data kategori");
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-        
-        loadNewsDetail();
-        loadCategories();
-    }, [id])
+        loadData();
+    }, [mode, id]);
 
     const handleChange = (e) => {
         if (e.target.name === "image") {
@@ -78,16 +79,7 @@ export default function NewsDetail() {
                 await newsCreate(form);
                 toast.success("Create News Success");
             }
-
-            setForm({
-                image: "",
-                title: "",
-                slug: "",
-                excerpt: "",
-                content: "",
-                category_id: "",
-                status: "published",
-            });
+            navigate("/news");
         } catch (err) {
             if (err.code == 422)
                 setError(err.errors);
@@ -110,7 +102,7 @@ export default function NewsDetail() {
                 <h1 className="text-3xl font-bold">News Detail</h1>
             </div>
             <form onSubmit={handleSubmit} className="space-y-2">
-                <img className="block" src={BASE_URL + form.image} alt={form.title} width="250" />
+                {isEditing && (<img className="block" src={BASE_URL + form.image} alt={form.title} width="250" />)}
                 <input
                     type="file"
                     name="image"

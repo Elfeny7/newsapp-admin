@@ -49,7 +49,13 @@ function App() {
           <Route
             path="/news/:id"
             element={
-              <NewsDetail />
+              <NewsDetail mode="edit" />
+            }
+          />
+          <Route
+            path="/news/create"
+            element={
+              <NewsDetail mode="create"/>
             }
           />
         </Route>
