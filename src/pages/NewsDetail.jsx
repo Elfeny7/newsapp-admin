@@ -39,8 +39,16 @@ export default function NewsDetail({ mode }) {
                 setIsEditing(true);
                 const [newsData, categoriesData] = await Promise.all([
                     fetchNewsDetail(id),
-                    fetchAllCategories()
+                    fetchAllCategories(),
                 ]);
+                if (newsData?.image) {
+                    await new Promise((resolve) => {
+                        const img = new Image();
+                        img.src = BASE_URL + newsData.image;
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                    });
+                }
                 setForm(newsData);
                 setCategories(categoriesData);
             } catch (err) {
