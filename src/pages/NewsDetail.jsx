@@ -6,6 +6,7 @@ import { fetchAllNews, newsCreate, newsUpdate, BASE_URL } from "../services/news
 import toast from "react-hot-toast";
 import { ChevronDown } from "lucide-react";
 import ModalError from "../components/ModalError";
+import Editor from "../components/Editor";
 
 export default function NewsDetail({ mode }) {
     const { id } = useParams();
@@ -161,14 +162,10 @@ export default function NewsDetail({ mode }) {
                 {error?.excerpt && (
                     <p className="text-red-500 text-sm">{error.excerpt[0]}</p>
                 )}
-
-                <textarea
-                    name="content"
-                    placeholder="Content"
+                <Editor
                     value={form.content}
-                    onChange={handleChange}
+                    onChange={(html) => setForm((prev) => ({ ...prev, content: html }))}
                     disabled={loading}
-                    className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                 />
                 {error?.content && (
                     <p className="text-red-500 text-sm">{error.content[0]}</p>

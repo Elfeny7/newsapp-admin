@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.prose h1 {
+  font-size: 1.875rem;
+}
+
+.prose h2 {
+  font-size: 1.2rem;
+}
