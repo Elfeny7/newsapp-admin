@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "./Button";
 
 export default function ModalConfirm({ message, onConfirm, onCancel }) {
   const [loading, setLoading] = useState(false);
@@ -21,24 +22,8 @@ export default function ModalConfirm({ message, onConfirm, onCancel }) {
         </h2>
         <p className="text-gray-700 mb-6">{message}</p>
         <div className="flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className={`${loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
-              } bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300`}
-          >
-            Close
-          </button>
-          <button
-            onClick={handleConfirm}
-            className={`bg-red-600 text-white px-4 py-2 rounded-lg min-w-[90px] flex justify-center items-center
-              ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-red-700 cursor-pointer"}`}
-          >
-            {loading ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mx-auto"></div>
-            ) : (
-              <span>Delete</span>
-            )}
-          </button>
+          <Button onClick={onCancel} loading={loading} className="bg-gray-200 !text-gray-700 hover:bg-gray-300">Close</Button>
+          <Button onClick={handleConfirm} loading={loading} className="bg-red-600 hover:bg-red-700">Delete</Button>
         </div>
       </div>
     </div>

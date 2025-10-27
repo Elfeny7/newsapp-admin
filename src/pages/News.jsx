@@ -1,38 +1,27 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchAllNews, newsCreate, newsDelete, newsUpdate, BASE_URL } from "../services/newsService";
+import { fetchAllNews, newsDelete, BASE_URL } from "../services/newsService";
 import { fetchAllCategories } from "../services/categoryService";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
 import toast from "react-hot-toast";
 import React from "react";
-import { SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { SquarePen, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import Button from "../components/Button";
 
 export default function News() {
     const [news, setNews] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [globalError, setGlobalError] = useState(null);
     const [search, setSearch] = useState("");
     const [sortField, setSortField] = useState("id");
     const [sortOrder, setSortOrder] = useState("asc");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
-    const [form, setForm] = useState({
-        image: null,
-        title: "",
-        slug: "",
-        excerpt: "",
-        content: "",
-        category_id: "",
-        status: "published",
-    });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -41,7 +30,7 @@ export default function News() {
                 const data = await fetchAllNews();
                 setNews(data);
             } catch (err) {
-                setError(err.message || "Gagal mengambil data berita");
+                setGlobalError(err.message || "Gagal mengambil data berita");
             } finally {
                 setInitialLoading(false);
             }
@@ -52,7 +41,7 @@ export default function News() {
                 const data = await fetchAllCategories();
                 setCategories(data);
             } catch (err) {
-                setError(err.message || "Gagal mengambil data kategori");
+                setGlobalError(err.message || "Gagal mengambil data kategori");
             } finally {
                 setInitialLoading(false);
             }
@@ -62,68 +51,11 @@ export default function News() {
         loadCategories();
     }, []);
 
-    const handleChange = (e) => {
-        if (e.target.name === "image") {
-            setForm({ ...form, image: e.target.files[0] });
-        } else {
-            setForm({ ...form, [e.target.name]: e.target.value });
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        setError(null);
-
-        try {
-            setLoading(true);
-
-            if (isEditing) {
-                const payload = { ...form };
-                await newsUpdate(form.id, payload);
-                const freshNews = await fetchAllNews();
-                setNews(freshNews);
-                setIsEditing(false);
-                toast.success("Update News Success");
-            } else {
-                const newNews = await newsCreate(form);
-                setNews((prev) => [...prev, newNews]);
-                toast.success("Create News Success");
-            }
-
-            setForm({
-                image: "",
-                title: "",
-                slug: "",
-                excerpt: "",
-                content: "",
-                category_id: "",
-                status: "published",
-            });
-        } catch (err) {
-            if (err.code == 422)
-                setError(err.errors);
-            else
-                setGlobalError(err.message || "Gagal menyimpan berita");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleEdit = (news) => {
-        setError(null);
-        setIsModalOpen(true);
-        setIsEditing(true);
-        setForm({ ...news });
-    };
-
     const handleDetail = (news) => {
-        setError(null);
         navigate(`/news/${news.id}`);
     };
 
     const handleDelete = async (id) => {
-        setError(null);
         try {
             setLoading(true);
             await newsDelete(id);
@@ -195,161 +127,10 @@ export default function News() {
 
     return (
         <div className="p-6">
-            {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
-                    <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
-                        <h2 className="text-xl font-semibold mb-4">
-                            {isEditing ? "Edit News" : "Add News"}
-                        </h2>
-
-                        <form onSubmit={handleSubmit} className="space-y-2">
-                            <input
-                                type="file"
-                                name="image"
-                                placeholder="Image"
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.image && (
-                                <p className="text-red-500 text-sm">{error.image[0]}</p>
-                            )}
-
-                            <input
-                                type="text"
-                                name="title"
-                                placeholder="Title"
-                                value={form.title}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.title && (
-                                <p className="text-red-500 text-sm">{error.title[0]}</p>
-                            )}
-
-                            <input
-                                type="text"
-                                name="slug"
-                                placeholder="Slug"
-                                value={form.slug}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.slug && (
-                                <p className="text-red-500 text-sm">{error.slug[0]}</p>
-                            )}
-
-                            <input
-                                type="text"
-                                name="excerpt"
-                                placeholder="Excerpt"
-                                value={form.excerpt}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.excerpt && (
-                                <p className="text-red-500 text-sm">{error.excerpt[0]}</p>
-                            )}
-
-                            <textarea
-                                name="content"
-                                placeholder="Content"
-                                value={form.content}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.content && (
-                                <p className="text-red-500 text-sm">{error.content[0]}</p>
-                            )}
-
-                            <div className="relative">
-                                <select name="category_id" value={form.category_id} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
-                                    <option value="" disabled hidden>Pilih Kategori</option>
-                                    {categories.map((c) => {
-                                        if (c.status === "inactive") return null;
-                                        return (
-                                            <option key={c.id} value={c.id}>
-                                                {c.name}
-                                            </option>
-                                        )
-                                    })}
-                                </select>
-                                <ChevronDown
-                                    size={18}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                                />
-                            </div>
-                            {error?.category_id && (
-                                <p className="text-red-500 text-sm">{error.category_id[0]}</p>
-                            )}
-                            <div className="relative">
-                                <select name="status" value={form.status} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
-                                    <option value="draft">Draft</option>
-                                    <option value="published">Published</option>
-                                </select>
-                                <ChevronDown
-                                    size={18}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                                />
-                            </div>
-
-                            <div className="flex gap-2 pt-2">
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`bg-blue-500 text-white px-4 py-2 rounded-lg flex-1 ${loading
-                                        ? "opacity-70 cursor-not-allowed"
-                                        : "hover:bg-blue-600 cursor-pointer"
-                                        }`}
-                                >
-                                    {loading ? (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mx-auto"></div>
-                                    ) : (
-                                        <span>{isEditing ? "Update News" : "Add News"}</span>
-                                    )}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsModalOpen(false);
-                                        setIsEditing(false);
-                                        setForm({
-                                            image: null,
-                                            title: "",
-                                            slug: "",
-                                            excerpt: "",
-                                            content: "",
-                                            category_id: "",
-                                            status: "published",
-                                        });
-                                    }}
-                                    disabled={loading}
-                                    className={`bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex-1 ${loading
-                                        ? "opacity-70 cursor-not-allowed"
-                                        : "hover:bg-gray-300 cursor-pointer"
-                                        }`}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
             <div className="flex items-center justify-between mb-5">
                 <h1 className="text-3xl font-bold">News Management</h1>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => handleAddUser()}
-                        className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
-                    >
-                        Add News
-                    </button>
+                    <Button onClick={() => handleAddUser()} >Add News</Button>
                     <input
                         type="text"
                         placeholder="Search..."
@@ -391,7 +172,6 @@ export default function News() {
                         <th className="w-[10%] p-2 text-center">Action</th>
                     </tr>
                 </thead>
-
                 <tbody className="divide-y divide-blue-100">
                     {paginatedNews.map((n) => {
                         const category = categories.find((c) => c.id === n.category_id);
@@ -408,18 +188,11 @@ export default function News() {
                                 <td className="p-2">{n.status}</td>
                                 <td className="p-2 space-x-4 text-center">
                                     <button
-                                        onClick={() => handleEdit(n)}
-                                        disabled={loading}
-                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    >
-                                        <SquarePen size={20} />
-                                    </button>
-                                    <button
                                         onClick={() => handleDetail(n)}
                                         disabled={loading}
                                         className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
                                     >
-                                        <Eye size={20} />
+                                        <SquarePen size={20} />
                                     </button>
                                     <button
                                         onClick={() => {
