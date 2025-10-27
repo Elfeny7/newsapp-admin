@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import React from "react";
 import { SquarePen, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import Button from "../components/Button";
+import Search from "../components/Search";
+import Pagination from "../components/Pagiantion";
 
 export default function News() {
     const [news, setNews] = useState([]);
@@ -131,13 +133,7 @@ export default function News() {
                 <h1 className="text-3xl font-bold">News Management</h1>
                 <div className="flex items-center gap-2">
                     <Button onClick={() => handleAddUser()} >Add News</Button>
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="rounded-lg p-2 w-[200px] bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-300 focus:outline-none focus:border-gray-300"
-                    />
+                    <Search value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
             </div>
 
@@ -222,43 +218,11 @@ export default function News() {
             </table>
             {totalPages > 1 && (
                 <div className="flex justify-center items-center space-x-2 mt-4">
-                    <button
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter(page =>
-                            page === 1 ||
-                            page === totalPages ||
-                            (page >= currentPage - 2 && page <= currentPage + 2)
-                        )
-                        .map((page, index, filteredPages) => {
-                            const prevPage = filteredPages[index - 1];
-                            const showDots = prevPage && page - prevPage > 1;
-                            return (
-                                <React.Fragment key={page}>
-                                    {showDots && <span>…</span>}
-                                    <button
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`px-3 py-1 rounded transition-colors ${currentPage === page ? "bg-blue-500 text-white cursor-pointer" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
-                                            }`}
-                                    >
-                                        {page}
-                                    </button>
-                                </React.Fragment>
-                            );
-                        })}
-                    <button
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <ChevronRight size={20} />
-                    </button>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
                 </div>
             )}
             {globalError && (
