@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { AuthProvider } from "./context/authtemp/AuthProvider";
 import "./index.css";
+import "quill/dist/quill.snow.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
