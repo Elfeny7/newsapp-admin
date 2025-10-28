@@ -1,22 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchAllNews, newsDelete, BASE_URL } from "../services/newsService";
-import { fetchAllCategories } from "../services/categoryService";
+import { BASE_URL } from "../services/newsService";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
 import toast from "react-hot-toast";
-import React from "react";
-import { SquarePen, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import Button from "../components/Button";
 import Search from "../components/Search";
 import Pagination from "../components/Pagiantion";
+import { useNews } from "../hooks/useNews";
+import { useCategories } from "../hooks/useCategories";
 
 export default function News() {
-    const [news, setNews] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const [globalError, setGlobalError] = useState(null);
     const [search, setSearch] = useState("");
     const [sortField, setSortField] = useState("id");
     const [sortOrder, setSortOrder] = useState("asc");
@@ -26,48 +21,23 @@ export default function News() {
     const [selectedId, setSelectedId] = useState(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const loadNews = async () => {
-            try {
-                const data = await fetchAllNews();
-                setNews(data);
-            } catch (err) {
-                setGlobalError(err.message || "Gagal mengambil data berita");
-            } finally {
-                setInitialLoading(false);
-            }
-        };
+    const { news, loading: loadingNews, error: errorNews, deleteNews, clearError: clearNewsError } = useNews();
+    const { categories, loading: loadingCategories, error: errorCategories, clearError: clearCategoryError } = useCategories();
 
-        const loadCategories = async () => {
-            try {
-                const data = await fetchAllCategories();
-                setCategories(data);
-            } catch (err) {
-                setGlobalError(err.message || "Gagal mengambil data kategori");
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-
-        loadNews();
-        loadCategories();
-    }, []);
+    const loading = loadingNews || loadingCategories;
+    const error = errorNews || errorCategories;
+    const clearError = () => {
+        if (errorNews) clearNewsError();
+        if (errorCategories) clearCategoryError();
+    };
 
     const handleDetail = (news) => {
         navigate(`/news/${news.id}`);
     };
 
     const handleDelete = async (id) => {
-        try {
-            setLoading(true);
-            await newsDelete(id);
-            setNews(news.filter((prev) => prev.id !== id));
-            toast.success("Delete News Success");
-        } catch (err) {
-            setGlobalError(err.message || "Gagal menghapus berita");
-        } finally {
-            setLoading(false);
-        }
+        await deleteNews(id);
+        toast.success("Delete News Success");
     };
 
     const handleAddUser = () => {
@@ -121,7 +91,7 @@ export default function News() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedNews = sortedNews.slice(startIndex, startIndex + itemsPerPage);
 
-    if (initialLoading) return (
+    if (loading) return (
         <div className="flex items-center justify-center h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
@@ -217,18 +187,16 @@ export default function News() {
                 </tbody>
             </table>
             {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2 mt-4">
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                    />
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
             )}
-            {globalError && (
+            {error && (
                 <ModalError
-                    message={globalError}
-                    onClose={() => setGlobalError(null)}
+                    message={error}
+                    onClose={clearError}
                 />
             )}
             {confirmOpen && (
