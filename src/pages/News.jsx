@@ -10,6 +10,7 @@ import Search from "../components/Search";
 import Pagination from "../components/Pagiantion";
 import { useNews } from "../hooks/useNews";
 import { useCategories } from "../hooks/useCategories";
+import { useFilteredSortedNews } from "../hooks/useFilteredSortedNews";
 
 export default function News() {
     const [search, setSearch] = useState("");
@@ -44,52 +45,15 @@ export default function News() {
         navigate("/news/create");
     }
 
-    const filteredNews = news.filter((news) => {
-        const category = categories.find((c) => c.id === news.category_id);
-        const categoryName = category ? category.name.toLowerCase() : "";
-
-        const searchTerm = search.toLowerCase();
-
-        return (
-            news.id.toString().includes(searchTerm) ||
-            news.title.toLowerCase().includes(searchTerm) ||
-            news.slug.toLowerCase().includes(searchTerm) ||
-            news.excerpt.toLowerCase().includes(searchTerm) ||
-            categoryName.includes(searchTerm) ||
-            news.content.toLowerCase().includes(searchTerm) ||
-            news.status.toLowerCase().includes(searchTerm)
-        );
+    const { paginatedNews, totalPages } = useFilteredSortedNews({
+        news,
+        categories,
+        search,
+        sortField,
+        sortOrder,
+        currentPage,
+        itemsPerPage,
     });
-
-    const categoryMap = Object.fromEntries(categories.map(c => [c.id, c.name]));
-
-    const sortedNews = [...filteredNews].sort((a, b) => {
-        if (sortField === "category_id") {
-            const categoryNameA = categoryMap[a.category_id] || "";
-            const categoryNameB = categoryMap[b.category_id] || "";
-            return sortOrder === "asc"
-                ? categoryNameA.localeCompare(categoryNameB)
-                : categoryNameB.localeCompare(categoryNameA);
-        }
-
-        const fieldA = a[sortField];
-        const fieldB = b[sortField];
-
-        if (typeof fieldA === "number" && typeof fieldB === "number") {
-            return sortOrder === "asc" ? fieldA - fieldB : fieldB - fieldA;
-        }
-
-        const valueA = String(fieldA).toLowerCase();
-        const valueB = String(fieldB).toLowerCase();
-
-        if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
-        if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-    });
-
-    const totalPages = Math.ceil(sortedNews.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedNews = sortedNews.slice(startIndex, startIndex + itemsPerPage);
 
     if (loading) return (
         <div className="flex items-center justify-center h-screen">
