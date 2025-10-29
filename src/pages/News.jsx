@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../services/newsService";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
 import toast from "react-hot-toast";
-import { SquarePen, Trash2 } from "lucide-react";
 import Button from "../components/Button";
 import Search from "../components/Search";
 import Pagination from "../components/Pagiantion";
 import { useNews } from "../hooks/useNews";
 import { useCategories } from "../hooks/useCategories";
 import { useFilteredSortedNews } from "../hooks/useFilteredSortedNews";
+import NewsTable from "../components/NewsTable";
 
 export default function News() {
     const [search, setSearch] = useState("");
@@ -70,86 +69,20 @@ export default function News() {
                     <Search value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
             </div>
-
-            <table className="table-fixed w-full text-sm text-left">
-                <thead className="bg-blue-200 text-gray-700 border border-blue-300 uppercase text-xs">
-                    <tr>
-                        <th className="w-[50px] p-2 py-3 text-center cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("id");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>ID {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[15%] p-2 text-center">Image</th>
-                        <th className="w-[17%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("title");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Title {sortField === "title" && (sortOrder === "asc" ? "↑" : "↓")} </th>
-                        <th className="w-[17%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("slug");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Slug {sortField === "slug" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[20%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("excerpt");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Excerpt {sortField === "excerpt" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("category_id");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Category {sortField === "category_id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[5%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("status");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Status {sortField === "status" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] p-2 text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-blue-100">
-                    {paginatedNews.map((n) => {
-                        const category = categories.find((c) => c.id === n.category_id);
-                        return (
-                            <tr key={n.id} className="hover:bg-blue-100 transition">
-                                <td className="p-2 text-center">{n.id}</td>
-                                <td className="p-2"><img className="mx-auto block" src={BASE_URL + n.image} alt={n.title} width="250" /></td>
-                                <td className="p-2">{n.title}</td>
-                                <td className="p-2">{n.slug}</td>
-                                <td className="p-2">{n.excerpt}</td>
-                                <td className="p-2">
-                                    {category ? category.name : "-"}
-                                </td>
-                                <td className="p-2">{n.status}</td>
-                                <td className="p-2 space-x-4 text-center">
-                                    <button
-                                        onClick={() => handleDetail(n)}
-                                        disabled={loading}
-                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    >
-                                        <SquarePen size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setSelectedId(n.id);
-                                            setConfirmOpen(true);
-                                        }}
-                                        disabled={loading}
-                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    >
-                                        <Trash2 size={20} />
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                    {news.length === 0 && (
-                        <tr>
-                            <td colSpan="5" className="text-center p-6 text-gray-500">
-                                <div className="flex flex-col items-center">
-                                    <span>🫥</span>
-                                    <span className="mt-2">No news found</span>
-                                </div>
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            <NewsTable
+                data={paginatedNews}
+                categories={categories}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                setSortField={setSortField}
+                setSortOrder={setSortOrder}
+                onEdit={handleDetail}
+                onDelete={(id) => {
+                    setSelectedId(id);
+                    setConfirmOpen(true);
+                }}
+                loading={loading}
+            />
             {totalPages > 1 && (
                 <Pagination
                     currentPage={currentPage}
