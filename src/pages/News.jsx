@@ -5,7 +5,7 @@ import ModalConfirm from "../components/ModalConfirm";
 import toast from "react-hot-toast";
 import Button from "../components/Button";
 import Search from "../components/Search";
-import Pagination from "../components/Pagiantion";
+import Pagination from "../components/Pagination";
 import { useNews } from "../hooks/useNews";
 import { useCategories } from "../hooks/useCategories";
 import { useFilteredSortedNews } from "../hooks/useFilteredSortedNews";
