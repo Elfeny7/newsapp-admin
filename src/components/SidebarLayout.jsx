@@ -19,8 +19,10 @@ export default function SidebarLayout() {
     ];
 
     return (
-        <div className="flex h-screen bg-gray-200">
-            <div className={`relative transition-all duration-300 ease-in-out bg-white shadow-lg ${isOpen || isPinned ? "w-64" : "w-16"}`}
+        <div className="flex h-screen bg-gray-200 overflow-hidden">
+            <div
+                className={`relative transition-all duration-300 ease-in-out bg-white shadow-lg ${isOpen || isPinned ? "w-64" : "w-16"
+                    }`}
                 onMouseEnter={() => !isPinned && setIsOpen(true)}
                 onMouseLeave={() => !isPinned && setIsOpen(false)}
             >
@@ -29,12 +31,16 @@ export default function SidebarLayout() {
                         <Menu size={20} />
                     </button>
 
-                    {isOpen || isPinned ? (
-                        <button onClick={() => setIsPinned(!isPinned)} className="p-2 rounded cursor-pointer hover:bg-gray-200">
+                    {(isOpen || isPinned) && (
+                        <button
+                            onClick={() => setIsPinned(!isPinned)}
+                            className="p-2 rounded cursor-pointer hover:bg-gray-200"
+                        >
                             {isPinned ? <CircleOff size={20} /> : <Circle size={20} />}
                         </button>
-                    ) : null}
+                    )}
                 </div>
+
                 <div className="p-2 space-y-2">
                     {menuItems.map((item) => {
                         const isActive = location.pathname === item.path;
@@ -42,7 +48,10 @@ export default function SidebarLayout() {
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                className={`flex items-center gap-2 p-2 rounded transition-all duration-300 ${isActive ? "bg-blue-100 text-blue-700 font-medium" : "hover:bg-gray-100"}`}
+                                className={`flex items-center gap-2 p-2 rounded transition-all duration-300 ${isActive
+                                        ? "bg-blue-100 text-blue-700 font-medium"
+                                        : "hover:bg-gray-100"
+                                    }`}
                             >
                                 {item.icon}
                                 {(isOpen || isPinned) && <span>{item.label}</span>}
@@ -51,11 +60,13 @@ export default function SidebarLayout() {
                     })}
                 </div>
             </div>
-            <main className="flex-1 transition-all duration-300">
-                <div className="m-6 bg-white rounded-2xl shadow-md">
+
+            <main className="flex-1 overflow-y-auto">
+                <div className="m-6 bg-white rounded-2xl shadow-md p-6 min-h-screen">
                     <Outlet />
                 </div>
             </main>
         </div>
     );
 }
+
