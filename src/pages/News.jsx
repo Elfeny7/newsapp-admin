@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useNews } from "../hooks/useNews";
+import { useCategories } from "../hooks/useCategories";
+import { useFilteredSortedNews } from "../hooks/useFilteredSortedNews";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
 import toast from "react-hot-toast";
 import Button from "../components/Button";
 import Search from "../components/Search";
 import Pagination from "../components/Pagination";
-import { useNews } from "../hooks/useNews";
-import { useCategories } from "../hooks/useCategories";
-import { useFilteredSortedNews } from "../hooks/useFilteredSortedNews";
 import NewsTable from "../components/NewsTable";
 
 export default function News() {
@@ -25,7 +25,8 @@ export default function News() {
     const { categories, loading: loadingCategories, error: errorCategories, clearError: clearCategoryError } = useCategories();
 
     const loading = loadingNews || loadingCategories;
-    const error = errorNews || errorCategories;
+    const error = [errorNews, errorCategories].filter(Boolean);
+
     const clearError = () => {
         if (errorNews) clearNewsError();
         if (errorCategories) clearCategoryError();
@@ -35,14 +36,18 @@ export default function News() {
         navigate(`/news/${news.id}`);
     };
 
-    const handleDelete = async (id) => {
-        await deleteNews(id);
-        toast.success("Delete News Success");
-    };
-
-    const handleAddUser = () => {
+    const handleAddNews = () => {
         navigate("/news/create");
     }
+
+    const handleDelete = async (id) => {
+        try {
+            await deleteNews(id);
+            toast.success("Delete News Success");
+        } catch (err) {
+            toast.error(err.message || "Gagal menghapus berita");
+        }
+    };
 
     const { paginatedNews, totalPages } = useFilteredSortedNews({
         news,
@@ -65,7 +70,7 @@ export default function News() {
             <div className="flex items-center justify-between mb-5">
                 <h1 className="text-3xl font-bold">News Management</h1>
                 <div className="flex items-center gap-2">
-                    <Button onClick={() => handleAddUser()} >Add News</Button>
+                    <Button onClick={handleAddNews} >Add News</Button>
                     <Search value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
             </div>
@@ -90,9 +95,9 @@ export default function News() {
                     onPageChange={setCurrentPage}
                 />
             )}
-            {error && (
+            {error.length > 0 && (
                 <ModalError
-                    message={error}
+                    message={error.join("\n")}
                     onClose={clearError}
                 />
             )}
