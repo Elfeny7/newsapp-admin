@@ -1,19 +1,12 @@
-import { useState, useEffect } from "react";
-import { fetchAllCategories, categoryCreate, categoryDelete, categoryUpdate } from "../services/categoryService";
+import { useState } from "react";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
-import toast from "react-hot-toast";
 import React from "react";
 import { SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-
+import { useCategories } from "../hooks/useCategories";
 
 export default function Category() {
-    const [categories, setCategories] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [globalError, setGlobalError] = useState(null);
     const [search, setSearch] = useState("");
     const [sortField, setSortField] = useState("id");
     const [sortOrder, setSortOrder] = useState("asc");
@@ -30,20 +23,7 @@ export default function Category() {
         status: "active"
     });
 
-    useEffect(() => {
-        const loadCategories = async () => {
-            try {
-                const data = await fetchAllCategories();
-                setCategories(data);
-            } catch (err) {
-                setError(err.message || "Gagal mengambil data kategori");
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-
-        loadCategories();
-    }, []);
+    const { categories, loading, initialLoading, error, globalError, clearError, deleteCategory, createCategory, updateCategory } = useCategories();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -51,55 +31,26 @@ export default function Category() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        setError(null);
-
-        try {
-            setLoading(true);
-
-            if (isEditing) {
-                const payload = { ...form };
-                await categoryUpdate(form.id, payload);
-                const freshCategories = await fetchAllCategories();
-                setCategories(freshCategories);
-                setIsEditing(false);
-                toast.success("Update Category Success");
-            } else {
-                const newCategories = await categoryCreate(form);
-                setCategories((prev) => [...prev, newCategories]);
-                toast.success("Create Category Success");
-            }
-
-            setForm({ name: "", slug: "", description: "", parent_id: "", status: "active" });
-        } catch (err) {
-            if (err.code == 422)
-                setError(err.errors);
-            else
-                setGlobalError(err.message || "Gagal menghapus kategori");
-        } finally {
-            setLoading(false);
+        clearError();
+        if (isEditing) {
+            await updateCategory(form);
+        } else {
+            await createCategory(form);
         }
+        setForm({ name: "", slug: "", description: "", parent_id: "", status: "active" });
+
     };
 
     const handleEdit = (category) => {
-        setError(null);
+        clearError();
         setIsModalOpen(true);
         setIsEditing(true);
-        setForm({...category});
+        setForm({ ...category });
     };
 
     const handleDelete = async (id) => {
-        setError(null);
-        try {
-            setLoading(true);
-            await categoryDelete(id);
-            setCategories(categories.filter((c) => c.id !== id));
-            toast.success("Delete Category Success");
-        } catch (err) {
-            setGlobalError(err.message || "Gagal menghapus kategori");
-        } finally {
-            setLoading(false);
-        }
+        clearError();
+        await deleteCategory(id);
     };
 
     const filteredCategories = categories.filter((category) => {
@@ -252,7 +203,13 @@ export default function Category() {
                                     onClick={() => {
                                         setIsModalOpen(false);
                                         setIsEditing(false);
-                                        setForm({ name: "", email: "", password: "", role: "viewer" });
+                                        setForm({
+                                            name: "",
+                                            slug: "",
+                                            description: "",
+                                            parent_id: "",
+                                            status: "active"
+                                        });
                                     }}
                                     disabled={loading}
                                     className={`bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex-1 ${loading
@@ -416,7 +373,7 @@ export default function Category() {
             {globalError && (
                 <ModalError
                     message={globalError}
-                    onClose={() => setGlobalError(null)}
+                    onClose={clearError}
                 />
             )}
             {confirmOpen && (
