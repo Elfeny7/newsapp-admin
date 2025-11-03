@@ -1,9 +1,14 @@
 import { useState } from "react";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
-import React from "react";
-import { SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useCategories } from "../hooks/useCategories";
+import { useFilteredSortedCategory } from "../hooks/useFilteredSortedCategory";
+import Pagination from "../components/Pagination";
+import Search from "../components/Search";
+import Button from "../components/Button";
+import CategoryTable from "../components/CategoryTable";
+import CategoryFormModal from "../components/CategoryFormModal";
 
 export default function Category() {
     const [isEditing, setIsEditing] = useState(false);
@@ -25,6 +30,15 @@ export default function Category() {
 
     const { categories, loading, initialLoading, error, globalError, clearError, deleteCategory, createCategory, updateCategory } = useCategories();
 
+    const { paginatedCategories, totalPages } = useFilteredSortedCategory({
+        categories,
+        search,
+        sortField,
+        sortOrder,
+        currentPage,
+        itemsPerPage,
+    });
+
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -38,7 +52,6 @@ export default function Category() {
             await createCategory(form);
         }
         setForm({ name: "", slug: "", description: "", parent_id: "", status: "active" });
-
     };
 
     const handleEdit = (category) => {
@@ -53,53 +66,6 @@ export default function Category() {
         await deleteCategory(id);
     };
 
-    const filteredCategories = categories.filter((category) => {
-        const parent = categories.find((p) => p.id === category.parent_id);
-        const parentName = parent ? parent.name.toLowerCase() : "";
-
-        const searchTerm = search.toLowerCase();
-
-        return (
-            category.id.toString().includes(searchTerm) ||
-            category.name.toLowerCase().includes(searchTerm) ||
-            category.slug.toLowerCase().includes(searchTerm) ||
-            category.description.toLowerCase().includes(searchTerm) ||
-            parentName.includes(searchTerm) ||
-            category.status.toLowerCase().includes(searchTerm)
-        );
-    });
-
-    const categoryMap = Object.fromEntries(categories.map(c => [c.id, c.name]));
-
-    const sortedCategories = [...filteredCategories].sort((a, b) => {
-        if (sortField === "parent_id") {
-            const parentNameA = categoryMap[a.parent_id] || "";
-            const parentNameB = categoryMap[b.parent_id] || "";
-            return sortOrder === "asc"
-                ? parentNameA.localeCompare(parentNameB)
-                : parentNameB.localeCompare(parentNameA);
-        }
-
-        const fieldA = a[sortField];
-        const fieldB = b[sortField];
-
-        if (typeof fieldA === "number" && typeof fieldB === "number") {
-            return sortOrder === "asc" ? fieldA - fieldB : fieldB - fieldA;
-        }
-
-        const valueA = String(fieldA).toLowerCase();
-        const valueB = String(fieldB).toLowerCase();
-
-        if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
-        if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-    });
-
-
-    const totalPages = Math.ceil(sortedCategories.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedCategories = sortedCategories.slice(startIndex, startIndex + itemsPerPage);
-
     if (initialLoading) return (
         <div className="flex items-center justify-center h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -109,266 +75,53 @@ export default function Category() {
     return (
         <div className="p-6">
             {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
-                    <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
-                        <h2 className="text-xl font-semibold mb-4">
-                            {isEditing ? "Edit Category" : "Add Category"}
-                        </h2>
-
-                        <form onSubmit={handleSubmit} className="space-y-2">
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder="Name"
-                                value={form.name}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.name && (
-                                <p className="text-red-500 text-sm">{error.name[0]}</p>
-                            )}
-
-                            <input
-                                type="text"
-                                name="slug"
-                                placeholder="Slug"
-                                value={form.slug}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.slug && (
-                                <p className="text-red-500 text-sm">{error.slug[0]}</p>
-                            )}
-
-                            <input
-                                type="text"
-                                name="description"
-                                placeholder="Description"
-                                value={form.description}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.description && (
-                                <p className="text-red-500 text-sm">{error.description[0]}</p>
-                            )}
-                            <div className="relative">
-                                <select name="parent_id" value={form.parent_id} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
-                                    <option value="">-- No Parent --</option>
-                                    {categories.map((c) => {
-                                        if (isEditing && c.id === form.id) return null;
-                                        return (
-                                            <option key={c.id} value={c.id}>
-                                                {c.name}
-                                            </option>
-                                        )
-                                    })}
-                                </select>
-                                <ChevronDown
-                                    size={18}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                                />
-                            </div>
-                            <div className="relative">
-                                <select name="status" value={form.status} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                </select>
-                                <ChevronDown
-                                    size={18}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                                />
-                            </div>
-
-                            <div className="flex gap-2 pt-2">
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`bg-blue-500 text-white px-4 py-2 rounded-lg flex-1 ${loading
-                                        ? "opacity-70 cursor-not-allowed"
-                                        : "hover:bg-blue-600 cursor-pointer"
-                                        }`}
-                                >
-                                    {loading ? (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mx-auto"></div>
-                                    ) : (
-                                        <span>{isEditing ? "Update Category" : "Add Category"}</span>
-                                    )}
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsModalOpen(false);
-                                        setIsEditing(false);
-                                        setForm({
-                                            name: "",
-                                            slug: "",
-                                            description: "",
-                                            parent_id: "",
-                                            status: "active"
-                                        });
-                                    }}
-                                    disabled={loading}
-                                    className={`bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex-1 ${loading
-                                        ? "opacity-70 cursor-not-allowed"
-                                        : "hover:bg-gray-300 cursor-pointer"
-                                        }`}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <CategoryFormModal
+                    setIsModalOpen={() => setIsModalOpen(false)}
+                    setIsEditing={() => setIsEditing(false)}
+                    setForm={() => setForm({
+                        name: "",
+                        slug: "",
+                        description: "",
+                        parent_id: "",
+                        status: "active"
+                    })}
+                    form={form}
+                    isEditing={isEditing}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                    loading={loading}
+                    error={error}
+                    categories={categories}
+                />
             )}
 
             <div className="flex items-center justify-between mb-5">
                 <h1 className="text-3xl font-bold">Category Management</h1>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
-                    >
-                        Add Category
-                    </button>
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="rounded-lg p-2 w-[200px] bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-300 focus:outline-none focus:border-gray-300"
-                    />
+                    <Button onClick={() => setIsModalOpen(true)} >Add Category</Button>
+                    <Search value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
             </div>
-
-            <table className="table-fixed w-full text-sm text-left">
-                <thead className="bg-blue-200 text-gray-700 border border-blue-300 uppercase text-xs">
-                    <tr>
-                        <th className="w-[50px] p-2 py-3 text-center cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("id");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>ID {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[15%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("name");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")} </th>
-                        <th className="w-[15%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("slug");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Slug {sortField === "slug" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[35%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("description");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Description {sortField === "description" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("parent_id");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Parent {sortField === "parent_id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("status");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Status {sortField === "status" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] p-2 text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-blue-100">
-                    {paginatedCategories.map((c) => {
-                        const parent = categories.find((p) => p.id === c.parent_id);
-                        return (
-                            <tr key={c.id} className="hover:bg-blue-100 transition">
-                                <td className="p-2 text-center">{c.id}</td>
-                                <td className="p-2">{c.name}</td>
-                                <td className="p-2">{c.slug}</td>
-                                <td className="p-2">{c.description}</td>
-                                <td className="p-2">
-                                    {parent ? parent.name : "-"}
-                                </td>
-                                <td className="p-2">{c.status}</td>
-                                <td className="p-2 space-x-4 text-center">
-                                    <button
-                                        onClick={() => handleEdit(c)}
-                                        disabled={loading}
-                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    >
-                                        <SquarePen size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setSelectedId(c.id);
-                                            setConfirmOpen(true);
-                                        }}
-                                        disabled={loading}
-                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    >
-                                        <Trash2 size={20} />
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                    {categories.length === 0 && (
-                        <tr>
-                            <td colSpan="5" className="text-center p-6 text-gray-500">
-                                <div className="flex flex-col items-center">
-                                    <span>🫥</span>
-                                    <span className="mt-2">No categories found</span>
-                                </div>
-                            </td>
-                        </tr>
-                    )}
-                    {categories.length === 0 && (
-                        <tr>
-                            <td colSpan="4" className="text-center p-4 text-gray-500">
-                                No categories found
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            <CategoryTable
+                data={paginatedCategories}
+                categories={categories}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                setSortField={setSortField}
+                setSortOrder={setSortOrder}
+                onEdit={handleEdit}
+                onDelete={(id) => {
+                    setSelectedId(id);
+                    setConfirmOpen(true);
+                }}
+                loading={loading}
+            />
             {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2 mt-4">
-                    <button
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter(page =>
-                            page === 1 ||
-                            page === totalPages ||
-                            (page >= currentPage - 2 && page <= currentPage + 2)
-                        )
-                        .map((page, index, filteredPages) => {
-                            const prevPage = filteredPages[index - 1];
-                            const showDots = prevPage && page - prevPage > 1;
-                            return (
-                                <React.Fragment key={page}>
-                                    {showDots && <span>…</span>}
-                                    <button
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`px-3 py-1 rounded transition-colors ${currentPage === page ? "bg-blue-500 text-white cursor-pointer" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
-                                            }`}
-                                    >
-                                        {page}
-                                    </button>
-                                </React.Fragment>
-                            );
-                        })}
-
-                    <button
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <ChevronRight size={20} />
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
             )}
             {globalError && (
                 <ModalError

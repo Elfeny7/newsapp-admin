@@ -63,10 +63,7 @@ export const useFilteredSortedNews = ({
     const paginatedNews = sortedNews.slice(startIndex, startIndex + itemsPerPage);
 
     return {
-        filteredNews,
-        sortedNews,
         paginatedNews,
         totalPages,
-        categoryMap,
     };
 };
