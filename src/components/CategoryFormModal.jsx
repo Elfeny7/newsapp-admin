@@ -89,12 +89,12 @@ export default function CategoryFormModal({
                     </div>
 
                     <div className="flex gap-2 pt-2">
-                        <Button type="submit" disabled={loading} loading={loading}>{isEditing ? "Update Category" : "Add Category"}</Button>
+                        <Button type="submit" disabled={loading} loading={loading} className="flex-1">{isEditing ? "Update Category" : "Add Category"}</Button>
                         <Button type="button" disabled={loading} onClick={() => {
                             setIsModalOpen();
                             setIsEditing();
                             setForm();
-                        }} loading={loading} className="bg-gray-200 !text-gray-700 hover:bg-gray-300">Close</Button>
+                        }} loading={loading} className="bg-gray-200 !text-gray-700 hover:bg-gray-300 flex-1">Close</Button>
                     </div>
                 </form>
             </div>
