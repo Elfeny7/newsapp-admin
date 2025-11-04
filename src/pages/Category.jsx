@@ -20,13 +20,14 @@ export default function Category() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
-    const [form, setForm] = useState({
+    const defaultForm = {
         name: "",
         slug: "",
         description: "",
         parent_id: "",
         status: "active"
-    });
+    }
+    const [form, setForm] = useState(defaultForm);
 
     const { categories, loading, initialLoading, error, globalError, clearError, deleteCategory, createCategory, updateCategory } = useCategories();
 
@@ -51,7 +52,7 @@ export default function Category() {
         } else {
             await createCategory(form);
         }
-        setForm({ name: "", slug: "", description: "", parent_id: "", status: "active" });
+        setForm(defaultForm);
     };
 
     const handleEdit = (category) => {
@@ -78,13 +79,7 @@ export default function Category() {
                 <CategoryFormModal
                     setIsModalOpen={() => setIsModalOpen(false)}
                     setIsEditing={() => setIsEditing(false)}
-                    setForm={() => setForm({
-                        name: "",
-                        slug: "",
-                        description: "",
-                        parent_id: "",
-                        status: "active"
-                    })}
+                    setForm={() => setForm(defaultForm)}
                     form={form}
                     isEditing={isEditing}
                     handleChange={handleChange}
