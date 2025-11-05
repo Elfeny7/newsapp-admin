@@ -88,7 +88,7 @@ export default function UserFormModal({
 
                     <div className="flex gap-2 pt-2">
                         <Button type="submit" disabled={loading} loading={loading} className="flex-1">{isEditing ? "Update User" : "Add User"}</Button>
-                        <Button type="button" disabled={loading} onClick={onClose} className={`bg-gray-200 !text-gray-700 ${loading ? '' : 'hover:bg-gray-300'} flex-1`}>Close</Button>
+                        <Button type="button" disabled={loading} onClick={onClose} closeButton={true} className="flex-1">Close</Button>
                     </div>
                 </form>
             </div>

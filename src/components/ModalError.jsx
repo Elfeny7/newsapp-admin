@@ -1,3 +1,5 @@
+import Button from "./Button";
+
 export default function ModalError({ message, onClose }) {
   if (!message) return null;
 
@@ -8,12 +10,7 @@ export default function ModalError({ message, onClose }) {
           Terjadi Kesalahan
         </h2>
         <p className="text-gray-700 mb-4">{message}</p>
-        <button
-          onClick={onClose}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
-        >
-          Tutup
-        </button>
+        <Button onClick={onClose} className="bg-red-700 hover:bg-red-800">Close</Button>
       </div>
     </div>
   );

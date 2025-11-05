@@ -11,8 +11,8 @@ export default function ModalConfirm({ message, onConfirm, onCancel, loading }) 
         </h2>
         <p className="text-gray-700 mb-6">{message}</p>
         <div className="flex justify-end gap-3">
-          <Button onClick={onCancel} loading={loading} className="bg-gray-200 !text-gray-700 hover:bg-gray-300">Close</Button>
-          <Button onClick={onConfirm} loading={loading} className="bg-red-600 hover:bg-red-700">Delete</Button>
+          <Button onClick={onCancel} disabled={loading} closeButton={true}>Close</Button>
+          <Button onClick={onConfirm} disabled={loading} loading={loading} className={`bg-red-700 ${loading ? '' : 'hover:bg-red-800'}`}>Delete</Button>
         </div>
       </div>
     </div>
