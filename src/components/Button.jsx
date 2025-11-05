@@ -9,7 +9,7 @@ const Button = ({
         <button
             disabled={loading || disabled}
             className={`relative bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center justify-center transition-all 
-        ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-700 cursor-pointer"} 
+        ${loading || disabled ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-700 cursor-pointer"} 
         ${className}`}
             {...props}
         >
