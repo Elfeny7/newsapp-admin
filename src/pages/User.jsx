@@ -148,6 +148,7 @@ export default function User() {
                         setConfirmOpen(false);
                     }}
                     onCancel={() => setConfirmOpen(false)}
+                    loading={loading}
                 />
             )}
         </div>
