@@ -1,18 +1,7 @@
-import { useState } from "react";
 import Button from "./Button";
 
-export default function ModalConfirm({ message, onConfirm, onCancel }) {
-  const [loading, setLoading] = useState(false);
+export default function ModalConfirm({ message, onConfirm, onCancel, loading }) {
   if (!message) return null;
-
-  const handleConfirm = async () => {
-    try {
-      setLoading(true);
-      await onConfirm();
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
@@ -23,7 +12,7 @@ export default function ModalConfirm({ message, onConfirm, onCancel }) {
         <p className="text-gray-700 mb-6">{message}</p>
         <div className="flex justify-end gap-3">
           <Button onClick={onCancel} loading={loading} className="bg-gray-200 !text-gray-700 hover:bg-gray-300">Close</Button>
-          <Button onClick={handleConfirm} loading={loading} className="bg-red-600 hover:bg-red-700">Delete</Button>
+          <Button onClick={onConfirm} loading={loading} className="bg-red-600 hover:bg-red-700">Delete</Button>
         </div>
       </div>
     </div>
