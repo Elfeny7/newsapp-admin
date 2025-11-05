@@ -1,5 +1,5 @@
 import Button from "../components/Button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Eye, EyeOff } from "lucide-react";
 
 export default function UserFormModal({
     isEditing,
@@ -88,7 +88,7 @@ export default function UserFormModal({
 
                     <div className="flex gap-2 pt-2">
                         <Button type="submit" disabled={loading} loading={loading} className="flex-1">{isEditing ? "Update User" : "Add User"}</Button>
-                        <Button type="button" disabled={loading} onClick={onClose} loading={loading} className="flex-1 bg-gray-200 !text-gray-700 hover:bg-gray-300">Close</Button>
+                        <Button type="button" disabled={loading} onClick={onClose} className={`bg-gray-200 !text-gray-700 ${loading ? '' : 'hover:bg-gray-300'} flex-1`}>Close</Button>
                     </div>
                 </form>
             </div>
