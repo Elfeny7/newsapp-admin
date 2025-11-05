@@ -1,20 +1,16 @@
-import { useState, useEffect } from "react";
-
-import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/userService";
+import { useState } from "react";
+import { useFilteredSortedUser } from "../hooks/useFilteredSortedUser";
+import { useUsers } from "../hooks/useUsers";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
-import toast from "react-hot-toast";
-import React from "react";
-import { Eye, EyeOff, SquarePen, Trash2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import Pagination from "../components/Pagination";
+import Search from "../components/Search";
+import Button from "../components/Button";
+import UserTable from "../components/UserTable";
+import UserFormModal from "../components/UserFormModal";
 
 export default function User() {
-    const [users, setUsers] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [showPassword, setShowPassword] = useState(false);
-    const [globalError, setGlobalError] = useState(null);
     const [search, setSearch] = useState("");
     const [sortField, setSortField] = useState("id");
     const [sortOrder, setSortOrder] = useState("asc");
@@ -23,27 +19,35 @@ export default function User() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
-    const [form, setForm] = useState({
+    const [showPassword, setShowPassword] = useState(false);
+    const defaultForm = {
         name: "",
         email: "",
         password: "",
         role: "viewer",
+    };
+    const [form, setForm] = useState(defaultForm);
+
+    const {
+        users,
+        loading,
+        initialLoading,
+        error,
+        globalError,
+        createUser,
+        updateUser,
+        deleteUser,
+        clearError
+    } = useUsers();
+
+    const { paginatedUsers, totalPages } = useFilteredSortedUser({
+        users,
+        search,
+        sortField,
+        sortOrder,
+        currentPage,
+        itemsPerPage,
     });
-
-    useEffect(() => {
-        const loadUsers = async () => {
-            try {
-                const data = await fetchAllUsers();
-                setUsers(data);
-            } catch (err) {
-                setError(err.message || "Gagal mengambil data users");
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-
-        loadUsers();
-    }, []);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -51,39 +55,17 @@ export default function User() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        setError(null);
-
-        try {
-            setLoading(true);
-
-            if (isEditing) {
-                const payload = { ...form };
-                if (!payload.password) delete payload.password;
-                await userUpdate(form.id, payload);
-                const freshUsers = await fetchAllUsers();
-                setUsers(freshUsers);
-                setIsEditing(false);
-                toast.success("Update User Success");
-            } else {
-                const newUser = await userCreate(form);
-                setUsers((prev) => [...prev, newUser]);
-                toast.success("Create User Success");
-            }
-
-            setForm({ name: "", email: "", password: "", role: "viewer" });
-        } catch (err) {
-            if (err.code == 422)
-                setError(err.errors);
-            else
-                setGlobalError(err.message || "Gagal menghapus user");
-        } finally {
-            setLoading(false);
+        clearError();
+        if (isEditing) {
+            await updateUser(form);
+        } else {
+            await createUser(form);
         }
+        setForm(defaultForm);
     };
 
     const handleEdit = (user) => {
-        setError(null);
+        clearError();
         setIsModalOpen(true);
         setIsEditing(true);
         setForm({
@@ -93,46 +75,11 @@ export default function User() {
     };
 
     const handleDelete = async (id) => {
-        setError(null);
-        try {
-            setLoading(true);
-            await userDelete(id);
-            setUsers(users.filter((u) => u.id !== id));
-            toast.success("Delete User Success");
-        } catch (err) {
-            setGlobalError(err.message || "Gagal menghapus user");
-        } finally {
-            setLoading(false);
-        }
+        clearError();
+        await deleteUser(id);
+        setConfirmOpen(false);
     };
 
-    const filteredUsers = users.filter(
-        (user) =>
-            user.id.toString().toLowerCase().includes(search.toLowerCase()) ||
-            user.name.toLowerCase().includes(search.toLowerCase()) ||
-            user.email.toLowerCase().includes(search.toLowerCase()) ||
-            user.role.toLowerCase().includes(search.toLowerCase())
-    );
-
-    const sortedUsers = [...filteredUsers].sort((a, b) => {
-        const fieldA = a[sortField];
-        const fieldB = b[sortField];
-
-        if (typeof fieldA === "number" && typeof fieldB === "number") {
-            return sortOrder === "asc" ? fieldA - fieldB : fieldB - fieldA;
-        }
-
-        const valueA = String(fieldA).toLowerCase();
-        const valueB = String(fieldB).toLowerCase();
-
-        if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
-        if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-    });
-
-    const totalPages = Math.ceil(sortedUsers.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedUsers = sortedUsers.slice(startIndex, startIndex + itemsPerPage);
 
     if (initialLoading) return (
         <div className="flex items-center justify-center h-screen">
@@ -143,243 +90,54 @@ export default function User() {
     return (
         <div className="p-6">
             {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
-                    <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
-                        <h2 className="text-xl font-semibold mb-4">
-                            {isEditing ? "Edit User" : "Add User"}
-                        </h2>
-
-                        <form onSubmit={handleSubmit} className="space-y-2">
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder="Name"
-                                value={form.name}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.name && (
-                                <p className="text-red-500 text-sm">{error.name[0]}</p>
-                            )}
-
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Email"
-                                value={form.email}
-                                onChange={handleChange}
-                                disabled={loading}
-                                className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                            />
-                            {error?.email && (
-                                <p className="text-red-500 text-sm">{error.email[0]}</p>
-                            )}
-
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    placeholder="Password"
-                                    value={form.password}
-                                    onChange={handleChange}
-                                    disabled={loading}
-                                    className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-                                >
-                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </button>
-                            </div>
-                            {error?.password && (
-                                <p className="text-red-500 text-sm">{error.password[0]}</p>
-                            )}
-                            <div className="relative">
-                                <select
-                                    name="role"
-                                    value={form.role}
-                                    onChange={handleChange}
-                                    disabled={loading}
-                                    className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed"
-                                >
-                                    <option value="superadmin">Superadmin</option>
-                                    <option value="journalist">Journalist</option>
-                                    <option value="viewer">Viewer</option>
-                                </select>
-                                <ChevronDown
-                                    size={18}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                                />
-                            </div>
-
-                            <div className="flex gap-2 pt-2">
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`bg-blue-500 text-white px-4 py-2 rounded-lg flex-1 ${loading
-                                        ? "opacity-70 cursor-not-allowed"
-                                        : "hover:bg-blue-600 cursor-pointer"
-                                        }`}
-                                >
-                                    {loading ? (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mx-auto"></div>
-                                    ) : (
-                                        <span>{isEditing ? "Update User" : "Add User"}</span>
-                                    )}
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsModalOpen(false);
-                                        setIsEditing(false);
-                                        setForm({ name: "", email: "", password: "", role: "viewer" });
-                                    }}
-                                    disabled={loading}
-                                    className={`bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex-1 ${loading
-                                        ? "opacity-70 cursor-not-allowed"
-                                        : "hover:bg-gray-300 cursor-pointer"
-                                        }`}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <UserFormModal
+                    onClose={() => {
+                        setIsModalOpen(false);
+                        setIsEditing(false);
+                        setForm(defaultForm);
+                    }}
+                    isEditing={isEditing}
+                    form={form}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                    loading={loading}
+                    error={error}
+                    showPassword={showPassword}
+                    onClickEye={() => setShowPassword(!showPassword)}
+                />
             )}
             <div className="flex items-center justify-between mb-5">
                 <h1 className="text-3xl font-bold">User Management</h1>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
-                    >
-                        Add User
-                    </button>
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="rounded-lg p-2 w-[200px] bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-300 focus:outline-none focus:border-gray-300"
-                    />
+                    <Button onClick={() => setIsModalOpen(true)} >Add User</Button>
+                    <Search value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
             </div>
 
-            <table className="table-fixed w-full text-sm text-left">
-                <thead className="bg-blue-200 text-gray-700 border border-blue-300 uppercase text-xs">
-                    <tr>
-                        <th className="w-[100px] p-2 py-3 text-center cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("id");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>ID {sortField === "id" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[35%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("name");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")} </th>
-                        <th className="w-[35%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("email");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[15%] p-2 cursor-pointer hover:bg-blue-300" onClick={() => {
-                            setSortField("role");
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                        }}>Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}</th>
-                        <th className="w-[10%] p-2 text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-blue-100 ">
-                    {paginatedUsers.map((u) => {
-                        return (
-                            <tr key={u.id} className="hover:bg-blue-100 transition">
-                                <td className="p-2 text-center">{u.id}</td>
-                                <td className="p-2">{u.name}</td>
-                                <td className="p-2">{u.email}</td>
-                                <td className="p-2">{u.role}</td>
-                                <td className="p-2 space-x-4 text-center">
-                                    <button
-                                        onClick={() => handleEdit(u)}
-                                        disabled={loading}
-                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    >
-                                        <SquarePen size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setSelectedId(u.id);
-                                            setConfirmOpen(true);
-                                        }}
-                                        disabled={loading}
-                                        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    >
-                                        <Trash2 size={20} />
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                    {users.length === 0 && (
-                        <tr>
-                            <td colSpan="5" className="text-center p-6 text-gray-500">
-                                <div className="flex flex-col items-center">
-                                    <span>🫥</span>
-                                    <span className="mt-2">No users found</span>
-                                </div>
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            <UserTable
+                paginatedUsers={paginatedUsers}
+                sortField={sortField}
+                sortOrder={sortOrder}
+                setSortField={setSortField}
+                setSortOrder={setSortOrder}
+                onEdit={handleEdit}
+                onDelete={(id) => {
+                    setSelectedId(id);
+                    setConfirmOpen(true);
+                }}
+                loading={loading}
+            />
             {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2 mt-4">
-                    <button
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter(page =>
-                            page === 1 ||
-                            page === totalPages ||
-                            (page >= currentPage - 2 && page <= currentPage + 2)
-                        )
-                        .map((page, index, filteredPages) => {
-                            const prevPage = filteredPages[index - 1];
-                            const showDots = prevPage && page - prevPage > 1;
-                            return (
-                                <React.Fragment key={page}>
-                                    {showDots && <span>…</span>}
-                                    <button
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`px-3 py-1 rounded transition-colors ${currentPage === page ? "bg-blue-500 text-white cursor-pointer" : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
-                                            }`}
-                                    >
-                                        {page}
-                                    </button>
-                                </React.Fragment>
-                            );
-                        })}
-
-                    <button
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="p-1.5 rounded bg-gray-200 cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <ChevronRight size={20} />
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
             )}
             {globalError && (
                 <ModalError
                     message={globalError}
-                    onClose={() => setGlobalError(null)}
+                    onClose={clearError}
                 />
             )}
             {confirmOpen && (
