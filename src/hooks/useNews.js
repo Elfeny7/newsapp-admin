@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { fetchAllNews, newsDelete } from "../services/newsService";
 
 export const useNews = () => {
     const [news, setNews] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -14,7 +16,7 @@ export const useNews = () => {
             } catch (err) {
                 setError(err.message || "Gagal mengambil data berita");
             } finally {
-                setLoading(false);
+                setInitialLoading(false);
             }
         };
 
@@ -22,11 +24,19 @@ export const useNews = () => {
     }, []);
 
     const deleteNews = async (id) => {
-        await newsDelete(id);
-        setNews((prev) => prev.filter((n) => n.id !== id));
+        try {
+            setLoading(true);
+            await newsDelete(id);
+            setNews((prev) => prev.filter((n) => n.id !== id));
+            toast.success("Delete News Success");
+        } catch(err) {
+            setError(err.message || "Gagal menghapus berita");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const clearError = () => setError(null);
 
-    return { news, loading, error, deleteNews, clearError };
+    return { news, loading, initialLoading, error, deleteNews, clearError };
 };

@@ -5,7 +5,6 @@ import { useCategories } from "../hooks/useCategories";
 import { useFilteredSortedNews } from "../hooks/useFilteredSortedNews";
 import ModalError from "../components/ModalError";
 import ModalConfirm from "../components/ModalConfirm";
-import toast from "react-hot-toast";
 import Button from "../components/Button";
 import Search from "../components/Search";
 import Pagination from "../components/Pagination";
@@ -21,10 +20,11 @@ export default function News() {
     const [selectedId, setSelectedId] = useState(null);
     const navigate = useNavigate();
 
-    const { news, loading: loadingNews, error: errorNews, deleteNews, clearError: clearNewsError } = useNews();
-    const { categories, loading: loadingCategories, error: errorCategories, clearError: clearCategoryError } = useCategories();
+    const { news, loading: loadingNews, initialLoading: initialLoadingNews, error: errorNews, deleteNews, clearError: clearNewsError } = useNews();
+    const { categories, initialLoading: initialLoadingCategories, error: errorCategories, clearError: clearCategoryError } = useCategories();
 
-    const loading = loadingNews || loadingCategories;
+    const initialLoading = initialLoadingNews || initialLoadingCategories;
+    const loading = loadingNews;
     const error = [errorNews, errorCategories].filter(Boolean);
 
     const clearError = () => {
@@ -41,12 +41,8 @@ export default function News() {
     }
 
     const handleDelete = async (id) => {
-        try {
-            await deleteNews(id);
-            toast.success("Delete News Success");
-        } catch (err) {
-            toast.error(err.message || "Gagal menghapus berita");
-        }
+        await deleteNews(id);
+        setConfirmOpen(false);
     };
 
     const { paginatedNews, totalPages } = useFilteredSortedNews({
@@ -59,7 +55,7 @@ export default function News() {
         itemsPerPage,
     });
 
-    if (loading) return (
+    if (initialLoading) return (
         <div className="flex items-center justify-center h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
@@ -106,9 +102,9 @@ export default function News() {
                     message="Apakah Anda yakin ingin menghapus berita ini?"
                     onConfirm={async () => {
                         await handleDelete(selectedId);
-                        setConfirmOpen(false);
                     }}
                     onCancel={() => setConfirmOpen(false)}
+                    loading={loading}
                 />
             )}
         </div >
