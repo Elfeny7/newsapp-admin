@@ -1,7 +1,7 @@
 import { SquarePen, Trash2} from "lucide-react";
 
 export default function CategoryTable({
-    data,
+    paginatedCategories,
     categories,
     sortField,
     sortOrder,
@@ -36,7 +36,7 @@ export default function CategoryTable({
                 </tr>
             </thead>
             <tbody className="divide-y divide-blue-100">
-                {data.map((c) => {
+                {paginatedCategories.map((c) => {
                     const parent = categories.find((p) => p.id === c.parent_id);
                     return (
                         <tr key={c.id} className="hover:bg-blue-100 transition">

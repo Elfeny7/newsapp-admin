@@ -1,9 +1,8 @@
 import { useState } from "react";
-import ModalError from "../components/ModalError";
-import ModalConfirm from "../components/ModalConfirm";
-import { ChevronDown } from "lucide-react";
 import { useCategories } from "../hooks/useCategories";
 import { useFilteredSortedCategory } from "../hooks/useFilteredSortedCategory";
+import ModalError from "../components/ModalError";
+import ModalConfirm from "../components/ModalConfirm";
 import Pagination from "../components/Pagination";
 import Search from "../components/Search";
 import Button from "../components/Button";
@@ -26,10 +25,19 @@ export default function Category() {
         description: "",
         parent_id: "",
         status: "active"
-    }
+    };
     const [form, setForm] = useState(defaultForm);
 
-    const { categories, loading, initialLoading, error, globalError, clearError, deleteCategory, createCategory, updateCategory } = useCategories();
+    const {
+        categories,
+        loading,
+        initialLoading,
+        error, globalError,
+        clearError,
+        deleteCategory,
+        createCategory,
+        updateCategory
+    } = useCategories();
 
     const { paginatedCategories, totalPages } = useFilteredSortedCategory({
         categories,
@@ -65,6 +73,7 @@ export default function Category() {
     const handleDelete = async (id) => {
         clearError();
         await deleteCategory(id);
+        setConfirmOpen(false);
     };
 
     if (initialLoading) return (
@@ -77,9 +86,11 @@ export default function Category() {
         <div className="p-6">
             {isModalOpen && (
                 <CategoryFormModal
-                    setIsModalOpen={() => setIsModalOpen(false)}
-                    setIsEditing={() => setIsEditing(false)}
-                    setForm={() => setForm(defaultForm)}
+                    onClose={() => {
+                        setIsModalOpen(false);
+                        setIsEditing(false);
+                        setForm(defaultForm);
+                    }}
                     form={form}
                     isEditing={isEditing}
                     handleChange={handleChange}
@@ -89,7 +100,6 @@ export default function Category() {
                     categories={categories}
                 />
             )}
-
             <div className="flex items-center justify-between mb-5">
                 <h1 className="text-3xl font-bold">Category Management</h1>
                 <div className="flex items-center gap-2">
@@ -98,7 +108,7 @@ export default function Category() {
                 </div>
             </div>
             <CategoryTable
-                data={paginatedCategories}
+                paginatedCategories={paginatedCategories}
                 categories={categories}
                 sortField={sortField}
                 sortOrder={sortOrder}
@@ -129,9 +139,9 @@ export default function Category() {
                     message="Apakah Anda yakin ingin menghapus kategori ini?"
                     onConfirm={async () => {
                         await handleDelete(selectedId);
-                        setConfirmOpen(false);
                     }}
                     onCancel={() => setConfirmOpen(false)}
+                    loading={loading}
                 />
             )}
         </div >

@@ -15,7 +15,7 @@ export const useCategories = () => {
                 const data = await fetchAllCategories();
                 setCategories(data);
             } catch (err) {
-                setError(err.message || "Gagal mengambil kategori");
+                setGlobalError(err.message || "Gagal mengambil kategori");
             } finally {
                 setInitialLoading(false);
             }
@@ -51,7 +51,7 @@ export const useCategories = () => {
             if (err.code == 422)
                 setError(err.errors);
             else
-                setGlobalError(err.message || "Gagal membuat kategori");
+                setGlobalError(err.message || "Gagal memperbarui kategori");
         } finally {
             setLoading(false);
         }
@@ -60,16 +60,29 @@ export const useCategories = () => {
     const deleteCategory = async (id) => {
         const prev = categories;
         try {
+            setLoading(true);
             await categoryDelete(id);
             setCategories((prev) => prev.filter((c) => c.id !== id));
             toast.success("Delete Category Success");
         } catch (err) {
             setCategories(prev);
             setGlobalError(err.message || "Gagal menghapus kategori");
+        }finally {
+            setLoading(false);
         }
     };
 
     const clearError = () => { setError(null); setGlobalError(null); };
 
-    return { categories, loading, initialLoading, error, globalError, clearError, deleteCategory, createCategory, updateCategory };
+    return {
+        categories,
+        loading,
+        initialLoading,
+        error,
+        globalError,
+        clearError,
+        deleteCategory,
+        createCategory,
+        updateCategory
+    };
 };
