@@ -62,7 +62,7 @@ export default function SidebarLayout() {
             </div>
 
             <main className="flex-1 overflow-y-auto">
-                <div className="m-6 bg-white rounded-2xl shadow-md p-6 min-h-screen">
+                <div className="m-6 bg-white rounded-2xl shadow-md p-6">
                     <Outlet />
                 </div>
             </main>
