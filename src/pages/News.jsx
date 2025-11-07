@@ -21,7 +21,7 @@ export default function News() {
     const navigate = useNavigate();
 
     const { news, loading: loadingNews, initialLoading: initialLoadingNews, error: errorNews, deleteNews, clearError: clearNewsError } = useNews();
-    const { categories, initialLoading: initialLoadingCategories, error: errorCategories, clearError: clearCategoryError } = useCategories();
+    const { categories, initialLoading: initialLoadingCategories, globalError: errorCategories, clearError: clearCategoryError } = useCategories();
 
     const initialLoading = initialLoadingNews || initialLoadingCategories;
     const loading = loadingNews;

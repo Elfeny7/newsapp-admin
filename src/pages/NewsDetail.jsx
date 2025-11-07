@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { fetchNewsDetail } from "../services/newsService";
-import { fetchAllCategories } from "../services/categoryService";
-import { fetchAllNews, newsCreate, newsUpdate, BASE_URL } from "../services/newsService";
-import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { useNews } from "../hooks/useNews";
+import { useCategories } from "../hooks/useCategories";
 import { ChevronDown } from "lucide-react";
 import ModalError from "../components/ModalError";
 import Editor from "../components/Editor";
@@ -11,13 +9,8 @@ import Button from "../components/Button";
 
 export default function NewsDetail({ mode }) {
     const { id } = useParams();
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [globalError, setGlobalError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [form, setForm] = useState({
+    const defaultForm = {
         image: null,
         title: "",
         slug: "",
@@ -25,43 +18,26 @@ export default function NewsDetail({ mode }) {
         content: "",
         category_id: "",
         status: "published",
-    });
-    const navigate = useNavigate();
+    };
+    const [form, setForm] = useState(defaultForm);
+
+    const { newsDetail, initialLoading: initialLoadingNews, loading, error: errorNews, errorVal, clearError: clearErrorNews, createNews, updateNews, BASE_URL } = useNews({ id, mode });
+
+    const { categories, initialLoading: initialLoadingCategories, globalError: errorCategories, clearError: clearErrorCategory } = useCategories();
+
+    const initialLoading = initialLoadingNews || initialLoadingCategories;
+    const error = [errorNews, errorCategories].filter(Boolean);
+    const clearError = () => {
+        if (errorNews) clearErrorNews();
+        if (errorCategories) clearErrorCategory();
+    };
 
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                setInitialLoading(true);
-                if (mode === "create") {
-                    setIsEditing(false);
-                    const categories = await fetchAllCategories();
-                    setCategories(categories);
-                    return;
-                }
-                setIsEditing(true);
-                const [newsData, categoriesData] = await Promise.all([
-                    fetchNewsDetail(id),
-                    fetchAllCategories(),
-                ]);
-                if (newsData?.image) {
-                    await new Promise((resolve) => {
-                        const img = new Image();
-                        img.src = BASE_URL + newsData.image;
-                        img.onload = resolve;
-                        img.onerror = resolve;
-                    });
-                }
-                setForm(newsData);
-                setCategories(categoriesData);
-            } catch (err) {
-                setError(err.message || "Gagal memuat data");
-            } finally {
-                setInitialLoading(false);
-            }
-        };
+        if (mode !== "edit" || !newsDetail) return;
 
-        loadData();
-    }, [mode, id]);
+        setIsEditing(true);
+        setForm(newsDetail);
+    }, [mode, newsDetail]);
 
     const handleChange = (e) => {
         if (e.target.name === "image") {
@@ -74,29 +50,11 @@ export default function NewsDetail({ mode }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        setError(null);
-
-        try {
-            setLoading(true);
-
-            if (isEditing) {
-                const payload = { ...form };
-                await newsUpdate(form.id, payload);
-                await fetchAllNews();
-                setIsEditing(false);
-                toast.success("Update News Success");
-            } else {
-                await newsCreate(form);
-                toast.success("Create News Success");
-            }
-            navigate("/news");
-        } catch (err) {
-            if (err.code == 422)
-                setError(err.errors);
-            else
-                setGlobalError(err.message || "Gagal menyimpan berita");
-        } finally {
-            setLoading(false);
+        if (isEditing) {
+            await updateNews(form);
+            setIsEditing(false);
+        } else {
+            await createNews(form);
         }
     };
 
@@ -121,8 +79,8 @@ export default function NewsDetail({ mode }) {
                     disabled={loading}
                     className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                 />
-                {error?.image && (
-                    <p className="text-red-500 text-sm">{error.image[0]}</p>
+                {errorVal?.image && (
+                    <p className="text-red-500 text-sm">{errorVal.image[0]}</p>
                 )}
 
                 <input
@@ -134,8 +92,8 @@ export default function NewsDetail({ mode }) {
                     disabled={loading}
                     className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                 />
-                {error?.title && (
-                    <p className="text-red-500 text-sm">{error.title[0]}</p>
+                {errorVal?.title && (
+                    <p className="text-red-500 text-sm">{errorVal.title[0]}</p>
                 )}
 
                 <input
@@ -147,8 +105,8 @@ export default function NewsDetail({ mode }) {
                     disabled={loading}
                     className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                 />
-                {error?.slug && (
-                    <p className="text-red-500 text-sm">{error.slug[0]}</p>
+                {errorVal?.slug && (
+                    <p className="text-red-500 text-sm">{errorVal.slug[0]}</p>
                 )}
 
                 <input
@@ -160,16 +118,16 @@ export default function NewsDetail({ mode }) {
                     disabled={loading}
                     className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                 />
-                {error?.excerpt && (
-                    <p className="text-red-500 text-sm">{error.excerpt[0]}</p>
+                {errorVal?.excerpt && (
+                    <p className="text-red-500 text-sm">{errorVal.excerpt[0]}</p>
                 )}
                 <Editor
                     value={form.content}
                     onChange={(html) => setForm((prev) => ({ ...prev, content: html }))}
                     disabled={loading}
                 />
-                {error?.content && (
-                    <p className="text-red-500 text-sm">{error.content[0]}</p>
+                {errorVal?.content && (
+                    <p className="text-red-500 text-sm">{errorVal.content[0]}</p>
                 )}
 
                 <div className="relative">
@@ -189,8 +147,8 @@ export default function NewsDetail({ mode }) {
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
                     />
                 </div>
-                {error?.category_id && (
-                    <p className="text-red-500 text-sm">{error.category_id[0]}</p>
+                {errorVal?.category_id && (
+                    <p className="text-red-500 text-sm">{errorVal.category_id[0]}</p>
                 )}
                 <div className="relative">
                     <select name="status" value={form.status} onChange={handleChange} disabled={loading} className="appearance-none p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
@@ -204,10 +162,10 @@ export default function NewsDetail({ mode }) {
                 </div>
                 <Button type="submit" loading={loading} className="mt-4">{isEditing ? "Update News" : "Add News"}</Button>
             </form>
-            {globalError && (
+            {error.length > 0 && (
                 <ModalError
-                    message={globalError}
-                    onClose={() => setGlobalError(null)}
+                    message={error.join("\n")}
+                    onClose={clearError}
                 />
             )}
         </div>
