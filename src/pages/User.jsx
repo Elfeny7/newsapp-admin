@@ -56,11 +56,8 @@ export default function User() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         clearError();
-        if (isEditing) {
-            await updateUser(form);
-        } else {
-            await createUser(form);
-        }
+        if (isEditing) await updateUser(form);
+        else await createUser(form);
         setForm(defaultForm);
     };
 

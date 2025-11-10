@@ -12,7 +12,14 @@ import SidebarLayout from "./components/SidebarLayout";
 function App() {
   return (
     <>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" toastOptions={{
+        style: {
+          fontSize: "20px",
+          padding: "18px 26px",
+          minWidth: "340px",
+          borderRadius: "12px",
+        },
+      }} />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -55,7 +62,7 @@ function App() {
           <Route
             path="/news/create"
             element={
-              <NewsDetail mode="create"/>
+              <NewsDetail mode="create" />
             }
           />
         </Route>
