@@ -32,8 +32,8 @@ export default function User() {
         users,
         loading,
         initialLoading,
+        valError,
         error,
-        globalError,
         createUser,
         updateUser,
         deleteUser,
@@ -101,7 +101,7 @@ export default function User() {
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}
                     loading={loading}
-                    error={error}
+                    error={valError}
                     showPassword={showPassword}
                     onClickEye={() => setShowPassword(!showPassword)}
                 />
@@ -134,9 +134,9 @@ export default function User() {
                     onPageChange={setCurrentPage}
                 />
             )}
-            {globalError && (
+            {error && (
                 <ModalError
-                    message={globalError}
+                    message={error}
                     onClose={clearError}
                 />
             )}

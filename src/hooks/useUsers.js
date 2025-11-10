@@ -1,21 +1,21 @@
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
-import { fetchAllUsers, userCreate, userDelete, userUpdate } from "../services/userService";
+import * as userService from "../services/userService";
 
 export const useUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
+    const [valError, setValError] = useState(null);
     const [error, setError] = useState(null);
-    const [globalError, setGlobalError] = useState(null);
 
     useEffect(() => {
         const loadUsers = async () => {
             try {
-                const data = await fetchAllUsers();
+                const data = await userService.getAll();
                 setUsers(data);
             } catch (err) {
-                setGlobalError(err.message || "Gagal mengambil data user");
+                setError(err.message);
             } finally {
                 setInitialLoading(false);
             }
@@ -27,14 +27,12 @@ export const useUsers = () => {
     const createUser = async (form) => {
         try {
             setLoading(true);
-            const newUser = await userCreate(form);
+            const newUser = await userService.create(form);
             setUsers((prev) => [...prev, newUser]);
             toast.success("Update User Success");
         } catch (err) {
-            if (err.code == 422)
-                setError(err.errors);
-            else
-                setGlobalError(err.message || "Gagal membuat user");
+            if (err.code === 422) setValError(err.errors);
+            else setError(err.message);
         } finally {
             setLoading(false);
         }
@@ -43,15 +41,13 @@ export const useUsers = () => {
     const updateUser = async (form) => {
         try {
             setLoading(true);
-            await userUpdate(form.id, form);
-            const updatedList = await fetchAllUsers();
+            await userService.update(form.id, form);
+            const updatedList = await userService.getAll();
             setUsers(updatedList);
-            toast.success("Create User Success");
+            toast.success("Update User Success");
         } catch (err) {
-            if (err.code == 422)
-                setError(err.errors);
-            else
-                setGlobalError(err.message || "Gagal membuat user");
+            if (err.code === 422) setValError(err.errors);
+            else setError(err.message);
         } finally {
             setLoading(false);
         }
@@ -61,25 +57,25 @@ export const useUsers = () => {
         const prev = users;
         try {
             setLoading(true);
-            await userDelete(id);
+            await userService.remove(id);
             setUsers((prev) => prev.filter((u) => u.id !== id));
             toast.success("Delete User Success");
         } catch (err) {
             setUsers(prev);
-            setGlobalError(err.message || "Gagal menghapus user");
+            setError(err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const clearError = () => { setError(null); setGlobalError(null); };
+    const clearError = () => { setValError(null); setError(null); };
 
     return {
         users,
         loading,
         initialLoading,
+        valError,
         error,
-        globalError,
         createUser,
         updateUser,
         deleteUser,

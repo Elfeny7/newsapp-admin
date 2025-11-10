@@ -1,39 +1,44 @@
-import { userIndexApi, userCreateApi, userDeleteApi, userUpdateApi } from "../api/user";
+import * as userApi from "../api/userApi";
 import ApiError from "../utils/ApiError";
 
-export const fetchAllUsers = async () => {
-  return await userIndexApi();
-};
-
-export const userCreate = async (payload) => {
+export const getAll = async () => {
   try {
-    const newUser = await userCreateApi(payload);
-    return newUser;
+    return await userApi.fetchUsers();
   } catch (err) {
     const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal membuat user";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
-  }
-};
-
-export const userDelete = async (id) => {
-  try {
-    await userDeleteApi(id);
-  } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal menghapus user";
+    const message = err.response?.data?.message || "Failed to fetch users";
     throw new ApiError(message, code);
   }
 };
 
-export const userUpdate = async (id, payload) => {
+export const create = async (payload) => {
   try {
-    await userUpdateApi(id, payload);
+    return await userApi.createUser(payload);
   } catch (err) {
     const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal memperbarui user";
+    const message = err.response?.data?.message || "Failed to create user";
+    const errors = err.response?.data?.errors || null;
+    throw new ApiError(message, code, errors);
+  }
+};
+
+export const update = async (id, payload) => {
+  try {
+    await userApi.updateUser(id, payload);
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Failed to update user";
     const errors = err.response?.data?.errors || null;
     throw new ApiError(message, code, errors);
   }
 }
+
+export const remove = async (id) => {
+  try {
+    await userApi.deleteUser(id);
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Failed to delete user";
+    throw new ApiError(message, code);
+  }
+};
