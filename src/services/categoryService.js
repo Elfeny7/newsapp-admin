@@ -1,4 +1,4 @@
-import { categoryIndexApi, categoryCreateApi, categoryDeleteApi, categoryUpdateApi } from "../api/category";
+import { categoryIndexApi, categoryCreateApi, categoryDeleteApi, categoryUpdateApi } from "../api/categoryApi";
 import ApiError from "../utils/ApiError";
 
 export const fetchAllCategories = async () => {
