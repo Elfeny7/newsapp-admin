@@ -1,39 +1,46 @@
-import { categoryIndexApi, categoryCreateApi, categoryDeleteApi, categoryUpdateApi } from "../api/categoryApi";
+import * as categoryApi from "../api/categoryApi";
 import ApiError from "../utils/ApiError";
 
-export const fetchAllCategories = async () => {
-  return await categoryIndexApi();
-};
-
-export const categoryCreate = async (payload) => {
+export const getAll = async () => {
   try {
-    const newCategory = await categoryCreateApi(payload);
-    return newCategory;
+    return await categoryApi.fetchCategories();
   } catch (err) {
     const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal membuat kategori";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
-  }
-};
-
-export const categoryDelete = async (id) => {
-  try {
-    await categoryDeleteApi(id);
-  } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal menghapus kategori";
+    const message = err.response?.data?.message || "Failed to fetch categories";
     throw new ApiError(message, code);
   }
 };
 
-export const categoryUpdate = async (id, payload) => {
+export const create = async (payload) => {
   try {
-    await categoryUpdateApi(id, payload);
+    const newCategory = await categoryApi.createCategory(payload);
+    return newCategory;
   } catch (err) {
     const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal memperbarui kategori";
+    const message = err.response?.data?.message || "Failed to create category";
+    const errors = err.response?.data?.errors || null;
+    throw new ApiError(message, code, errors);
+  }
+};
+
+export const update = async (id, payload) => {
+  try {
+    await categoryApi.updateCategory(id, payload);
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Failed to update category";
     const errors = err.response?.data?.errors || null;
     throw new ApiError(message, code, errors);
   }
 }
+
+export const remove = async (id) => {
+  try {
+    await categoryApi.deleteCategory(id);
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Failed to delete category";
+    throw new ApiError(message, code);
+  }
+};
+

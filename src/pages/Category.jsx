@@ -32,7 +32,8 @@ export default function Category() {
         categories,
         loading,
         initialLoading,
-        error, globalError,
+        valError,
+        error,
         clearError,
         deleteCategory,
         createCategory,
@@ -96,7 +97,7 @@ export default function Category() {
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}
                     loading={loading}
-                    error={error}
+                    error={valError}
                     categories={categories}
                 />
             )}
@@ -128,9 +129,9 @@ export default function Category() {
                     onPageChange={setCurrentPage}
                 />
             )}
-            {globalError && (
+            {error && (
                 <ModalError
-                    message={globalError}
+                    message={error}
                     onClose={clearError}
                 />
             )}
