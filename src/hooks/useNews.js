@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../services/newsService";
 import { useNavigate } from "react-router-dom";
-import { fetchAllNews, newsDelete, newsCreate, newsUpdate, fetchNewsDetail } from "../services/newsService";
+import * as newsService from "../services/newsService";
 
 export const useNews = ({ id, mode } = {}) => {
     const [news, setNews] = useState([]);
@@ -17,7 +17,7 @@ export const useNews = ({ id, mode } = {}) => {
         if (id && mode === "edit") {
             const loadNewsDetail = async () => {
                 try {
-                    const data = await fetchNewsDetail(id);
+                    const data = await newsService.fetchNewsDetail(id);
                     if (data?.image) {
                         await new Promise((resolve) => {
                             const img = new Image();
@@ -28,7 +28,7 @@ export const useNews = ({ id, mode } = {}) => {
                     }
                     setNewsDetail(data);
                 } catch (err) {
-                    setError(err.message || "Gagal mengambil data berita");
+                    setError(err.message);
                 } finally {
                     setInitialLoading(false);
                 };
@@ -41,10 +41,10 @@ export const useNews = ({ id, mode } = {}) => {
         } else if (!id && !mode) {
             const loadNews = async () => {
                 try {
-                    const data = await fetchAllNews();
+                    const data = await newsService.fetchAllNews(id);
                     setNews(data);
                 } catch (err) {
-                    setError(err.message || "Gagal mengambil data berita");
+                    setError(err.message);
                 } finally {
                     setInitialLoading(false);
                 }
@@ -54,30 +54,17 @@ export const useNews = ({ id, mode } = {}) => {
 
     }, [id, mode]);
 
-    const deleteNews = async (id) => {
-        try {
-            setLoading(true);
-            await newsDelete(id);
-            setNews((prev) => prev.filter((n) => n.id !== id));
-            toast.success("Delete News Success");
-        } catch (err) {
-            setError(err.message || "Gagal menghapus berita");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const createNews = async (form) => {
         try {
             setLoading(true);
-            await newsCreate(form);
+            await newsService.createNews(form);
             toast.success("Create News Success");
             navigate("/news");
         } catch (err) {
             if (err.code == 422)
                 setErrorVal(err.errors);
             else
-                setError(err.message || "Gagal membuat berita");
+                setError(err.message);
         } finally {
             setLoading(false);
         };
@@ -86,17 +73,30 @@ export const useNews = ({ id, mode } = {}) => {
     const updateNews = async (form) => {
         try {
             setLoading(true);
-            await newsUpdate(form.id, form);
+            await newsService.updateNews(form.id, form);
             toast.success("Update News Success");
             navigate("/news");
         } catch (err) {
             if (err.code == 422)
                 setErrorVal(err.errors);
             else
-                setError(err.message || "Gagal memperbarui berita");
+                setError(err.message);
         } finally {
             setLoading(false);
         };
+    };
+
+    const deleteNews = async (id) => {
+        try {
+            setLoading(true);
+            await newsService.deleteNews(id);
+            setNews((prev) => prev.filter((n) => n.id !== id));
+            toast.success("Delete News Success");
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const clearError = () => setError(null);

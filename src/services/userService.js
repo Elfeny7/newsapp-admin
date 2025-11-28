@@ -1,9 +1,9 @@
 import * as userApi from "../api/userApi";
 import ApiError from "../utils/ApiError";
 
-export const getAll = async () => {
+export const fetchAllUsers = async () => {
   try {
-    return await userApi.fetchUsers();
+    return await userApi.fetchAll();
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Failed to fetch users";
@@ -11,9 +11,9 @@ export const getAll = async () => {
   }
 };
 
-export const create = async (payload) => {
+export const createUser = async (payload) => {
   try {
-    return await userApi.createUser(payload);
+    return await userApi.create(payload);
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Failed to create user";
@@ -22,9 +22,9 @@ export const create = async (payload) => {
   }
 };
 
-export const update = async (id, payload) => {
+export const updateUser = async (id, payload) => {
   try {
-    await userApi.updateUser(id, payload);
+    await userApi.update(id, payload);
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Failed to update user";
@@ -33,9 +33,9 @@ export const update = async (id, payload) => {
   }
 }
 
-export const remove = async (id) => {
+export const deleteUser = async (id) => {
   try {
-    await userApi.deleteUser(id);
+    await userApi.remove(id);
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Failed to delete user";

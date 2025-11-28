@@ -1,9 +1,9 @@
 import * as categoryApi from "../api/categoryApi";
 import ApiError from "../utils/ApiError";
 
-export const getAll = async () => {
+export const fetchAllCategories = async () => {
   try {
-    return await categoryApi.fetchCategories();
+    return await categoryApi.fetchAll();
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Failed to fetch categories";
@@ -11,9 +11,9 @@ export const getAll = async () => {
   }
 };
 
-export const create = async (payload) => {
+export const createCategory = async (payload) => {
   try {
-    const newCategory = await categoryApi.createCategory(payload);
+    const newCategory = await categoryApi.create(payload);
     return newCategory;
   } catch (err) {
     const code = err.response?.status || null;
@@ -23,9 +23,9 @@ export const create = async (payload) => {
   }
 };
 
-export const update = async (id, payload) => {
+export const updateCategory = async (id, payload) => {
   try {
-    await categoryApi.updateCategory(id, payload);
+    await categoryApi.update(id, payload);
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Failed to update category";
@@ -34,9 +34,9 @@ export const update = async (id, payload) => {
   }
 }
 
-export const remove = async (id) => {
+export const deleteCategory = async (id) => {
   try {
-    await categoryApi.deleteCategory(id);
+    await categoryApi.remove(id);
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Failed to delete category";

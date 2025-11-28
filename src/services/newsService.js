@@ -1,18 +1,18 @@
-import { newsIndexApi, newsCreateApi, newsDeleteApi, newsUpdateApi, newsShowApi } from "../api/news";
+import * as newsApi from "../api/newsApi";
 import { STORAGE_BASE_URL } from "../config/env";
 import ApiError from "../utils/ApiError";
 
 export const BASE_URL = `${STORAGE_BASE_URL}/news/`;
 
 export const fetchAllNews = async () => {
-  return await newsIndexApi();
+  return await newsApi.fetchAll();
 };
 
-export const newsCreate = async (form) => {
+export const createNews = async (form) => {
   try {
     const formData = new FormData();
     Object.entries(form).forEach(([key, val]) => formData.append(key, val));
-    const newNews = await newsCreateApi(formData);
+    const newNews = await newsApi.create(formData);
     return newNews;
   } catch (err) {
     const code = err.response?.status || null;
@@ -22,17 +22,7 @@ export const newsCreate = async (form) => {
   }
 };
 
-export const newsDelete = async (id) => {
-  try {
-    await newsDeleteApi(id);
-  } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal menghapus berita";
-    throw new ApiError(message, code);
-  }
-};
-
-export const newsUpdate = async (id, form) => {
+export const updateNews = async (id, form) => {
   try {
     const formData = new FormData();
 
@@ -42,7 +32,7 @@ export const newsUpdate = async (id, form) => {
     });
 
     formData.append("_method", "PUT");
-    await newsUpdateApi(id, formData);
+    await newsApi.update(id, formData);
   } catch (err) {
     const code = err.response?.status || null;
     const message = err.response?.data?.message || "Gagal memperbarui berita";
@@ -51,6 +41,16 @@ export const newsUpdate = async (id, form) => {
   }
 }
 
+export const deleteNews = async (id) => {
+  try {
+    await newsApi.remove(id);
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Gagal menghapus berita";
+    throw new ApiError(message, code);
+  }
+};
+
 export const fetchNewsDetail = async (id) => {
-  return await newsShowApi(id);
+  return await newsApi.fetchById(id);
 }

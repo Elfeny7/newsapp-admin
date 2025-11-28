@@ -12,7 +12,7 @@ export const useUsers = () => {
     useEffect(() => {
         const loadUsers = async () => {
             try {
-                const data = await userService.getAll();
+                const data = await userService.fetchAllUsers();
                 setUsers(data);
             } catch (err) {
                 setError(err.message);
@@ -27,9 +27,9 @@ export const useUsers = () => {
     const createUser = async (form) => {
         try {
             setLoading(true);
-            const newUser = await userService.create(form);
+            const newUser = await userService.createUser(form);
             setUsers((prev) => [...prev, newUser]);
-            toast.success("Update User Success");
+            toast.success("Create User Success");
         } catch (err) {
             if (err.code === 422) setValError(err.errors);
             else setError(err.message);
@@ -41,8 +41,8 @@ export const useUsers = () => {
     const updateUser = async (form) => {
         try {
             setLoading(true);
-            await userService.update(form.id, form);
-            const updatedList = await userService.getAll();
+            await userService.updateUser(form.id, form);
+            const updatedList = await userService.fetchAllUsers();
             setUsers(updatedList);
             toast.success("Update User Success");
         } catch (err) {
@@ -57,7 +57,7 @@ export const useUsers = () => {
         const prev = users;
         try {
             setLoading(true);
-            await userService.remove(id);
+            await userService.deleteUser(id);
             setUsers((prev) => prev.filter((u) => u.id !== id));
             toast.success("Delete User Success");
         } catch (err) {

@@ -1,11 +1,11 @@
-import { meApi, loginApi } from "../api/auth";
+import { me, login } from "../api/authApi";
 
 export const fetchUser = async () => {
-  return await meApi();
+  return await me();
 };
 
 export const loginAndStore = async (email, password) => {
-  const { token, user } = await loginApi(email, password);
+  const { token, user } = await login(email, password);
   localStorage.setItem("token", token);
   return user;
 };

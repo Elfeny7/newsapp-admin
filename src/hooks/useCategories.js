@@ -12,10 +12,10 @@ export const useCategories = () => {
     useEffect(() => {
         const loadCategories = async () => {
             try {
-                const data = await categoryService.getAll();
+                const data = await categoryService.fetchAllCategories();
                 setCategories(data);
             } catch (err) {
-                setError(err.message || "Gagal mengambil kategori");
+                setError(err.message);
             } finally {
                 setInitialLoading(false);
             }
@@ -27,14 +27,14 @@ export const useCategories = () => {
     const createCategory = async (form) => {
         try {
             setLoading(true);
-            const newCategory = await categoryService.create(form);
+            const newCategory = await categoryService.createCategory(form);
             setCategories((prev) => [...prev, newCategory]);
             toast.success("Create Category Success");
         } catch (err) {
             if (err.code == 422)
                 setValError(err.errors);
             else
-                setError(err.message || "Gagal membuat kategori");
+                setError(err.message);
         } finally {
             setLoading(false);
         }
@@ -43,15 +43,15 @@ export const useCategories = () => {
     const updateCategory = async (form) => {
         try {
             setLoading(true);
-            await categoryService.update(form.id, form);
-            const updatedList = await categoryService.getAll();
+            await categoryService.updateCategory(form.id, form);
+            const updatedList = await categoryService.fetchAllCategories();
             setCategories(updatedList);
             toast.success("Update Category Success");
         } catch (err) {
             if (err.code == 422)
                 setValError(err.errors);
             else
-                setError(err.message || "Gagal memperbarui kategori");
+                setError(err.message);
         } finally {
             setLoading(false);
         }
@@ -61,12 +61,12 @@ export const useCategories = () => {
         const prev = categories;
         try {
             setLoading(true);
-            await categoryService.remove(id);
+            await categoryService.deleteCategory(id);
             setCategories((prev) => prev.filter((c) => c.id !== id));
             toast.success("Delete Category Success");
         } catch (err) {
             setCategories(prev);
-            setError(err.message || "Gagal menghapus kategori");
+            setError(err.message);
         }finally {
             setLoading(false);
         }
