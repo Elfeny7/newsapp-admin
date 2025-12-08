@@ -1,4 +1,4 @@
-import AuthContext from "../context/auth/AuthContext";
+import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 

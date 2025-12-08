@@ -1,13 +1,27 @@
-import { me, login } from "../api/authApi";
+import * as authApi from "../api/authApi";
+import ApiError from "../utils/ApiError";
 
 export const fetchUser = async () => {
-  return await me();
+  try {
+    return await authApi.me();
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Failed to fetch user";
+    throw new ApiError(message, code);
+  }
 };
 
 export const loginAndStore = async (email, password) => {
-  const { token, user } = await login(email, password);
-  localStorage.setItem("token", token);
-  return user;
+  try {
+    const { token, user } = await authApi.login(email, password);
+    localStorage.setItem("token", token);
+    return user;
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Failed to login";
+    const errors = err.response?.data?.errors || null;
+    throw new ApiError(message, code, errors);
+  }
 };
 
 export const clearAuth = () => {

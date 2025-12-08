@@ -1,41 +1,27 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import AuthContext from "../context/auth/AuthContext";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import Button from "../components/Button";
+import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import ModalError from "../components/ModalError";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
-    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    const {
+        login,
+        loading,
+        error,
+        valError,
+        clearError
+    } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            setLoading(true);
-            await login(email, password);
-            navigate("/");
-        } catch (err) {
-            let message = "Login gagal";
-            if (err.response?.data?.message) {
-                message = err.response.data.message;
-            } else if (err.message) {
-                message = err.message;
-            }
-            setError(message);
-        } finally {
-            setLoading(false);
-        }
+        await login(email, password);
     };
-
-    if (loading) return (
-        <div className="flex items-center justify-center h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-    );
 
     return (
         <div className="flex h-screen bg-gray-100 justify-center items-center">
@@ -43,39 +29,48 @@ export default function Login() {
                 onSubmit={handleSubmit}
                 className="p-6 bg-white shadow-md rounded w-80 relative"
             >
-                <h1 className="text-xl mb-4">Login Admin</h1>
-                {error && <p className="text-red-500">{error}</p>}
+                <h1 className="text-xl mb-4">Login</h1>
                 <input
                     type="email"
+                    name="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border p-2 w-full mb-2 rounded"
+                    disabled={loading}
+                    className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed mb-2"
                 />
-                <div className="relative">
+                {valError?.email && (
+                    <p className="text-red-500 text-sm mb-2">{valError.email[0]}</p>
+                )}
+                <div className="relative mb-2">
                     <input
                         type={showPassword ? "text" : "password"}
+                        name="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="border p-2 w-full mb-2 rounded pr-10"
+                        disabled={loading}
+                        className="p-3 w-full rounded-lg bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none disabled:opacity-70 disabled:cursor-not-allowed"
                     />
                     <button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                        onClick={() => setShowPassword(!showPassword)}
                     >
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                 </div>
-
-                <button
-                    type="submit"
-                    className="bg-blue-500 text-white p-2 w-full rounded cursor-pointer hover:bg-blue-600"
-                >
-                    Login
-                </button>
+                {valError?.password && (
+                    <p className="text-red-500 text-sm mb-2">{valError.password[0]}</p>
+                )}
+                <Button type="submit" loading={loading} disabled={loading} className="mt-2 w-full">Login</Button>
             </form>
+            {error && (
+                <ModalError
+                    message={error}
+                    onClose={clearError}
+                />
+            )}
         </div>
     );
 }
