@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Circle, CircleOff, House, Users, LayoutGrid, Newspaper } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft , House, Users, LayoutGrid, Newspaper } from "lucide-react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 
 export default function Sidebar() {
@@ -21,8 +21,7 @@ export default function Sidebar() {
     return (
         <div className="flex h-screen bg-gray-200 overflow-hidden">
             <div
-                className={`relative transition-all duration-300 ease-in-out bg-white shadow-lg ${isOpen || isPinned ? "w-64" : "w-16"
-                    }`}
+                className={`relative bg-white shadow-lg transition-[width] duration-300 ease-in-out ${isOpen || isPinned ? "w-64" : "w-16"}`}
                 onMouseEnter={() => !isPinned && setIsOpen(true)}
                 onMouseLeave={() => !isPinned && setIsOpen(false)}
             >
@@ -31,30 +30,29 @@ export default function Sidebar() {
                         <Menu size={20} />
                     </button>
 
-                    {(isOpen || isPinned) && (
-                        <button
-                            onClick={() => setIsPinned(!isPinned)}
-                            className="p-2 rounded cursor-pointer hover:bg-gray-200"
-                        >
-                            {isPinned ? <CircleOff size={20} /> : <Circle size={20} />}
+                    <div className={`transition-all duration-300 overflow-hidden ${isOpen || isPinned
+                        ? "opacity-100 max-w-[40px] translate-x-0"
+                        : "opacity-0 max-w-0 -translate-x-2"}`}
+                    >
+                        <button onClick={() => setIsPinned(!isPinned)} className="p-2 rounded cursor-pointer hover:bg-gray-200">
+                            {isPinned ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
                         </button>
-                    )}
+                    </div>
                 </div>
 
                 <div className="p-2 space-y-2">
                     {menuItems.map((item) => {
                         const isActive = location.pathname === item.path;
                         return (
-                            <Link
-                                key={item.path}
-                                to={item.path}
-                                className={`flex items-center gap-2 p-2 rounded transition-all duration-300 ${isActive
-                                        ? "bg-blue-100 text-blue-700 font-medium"
-                                        : "hover:bg-gray-100"
-                                    }`}
-                            >
-                                {item.icon}
-                                {(isOpen || isPinned) && <span>{item.label}</span>}
+                            <Link key={item.path} to={item.path} className={`flex items-center gap-3 p-2 rounded transition-all duration-300 ${isActive ? "bg-blue-100 text-blue-700" : "hover:bg-gray-100"}`}>
+                                <div className="flex-shrink-0 w-5 h-5">
+                                    {item.icon}
+                                </div>
+                                <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen || isPinned
+                                    ? "opacity-100 translate-x-0 max-w-[200px]"
+                                    : "opacity-0 -translate-x-4 max-w-0"}`}>
+                                    {item.label}
+                                </span>
                             </Link>
                         );
                     })}
