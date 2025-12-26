@@ -8,7 +8,7 @@ import Categories from "./pages/Category";
 import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import SidebarLayout from "./components/SidebarLayout";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route element={<ProtectedRoute><SidebarLayout /></ProtectedRoute>}>
+        <Route element={<ProtectedRoute><Sidebar /></ProtectedRoute>}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/users" element={<User />} />
           <Route path="/categories" element={<Categories />} />

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu, Circle, CircleOff, House, Users, LayoutGrid, Newspaper } from "lucide-react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 
-export default function SidebarLayout() {
+export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isPinned, setIsPinned] = useState(false);
     const location = useLocation();
