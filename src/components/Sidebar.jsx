@@ -31,7 +31,7 @@ export default function Sidebar() {
                     </button>
 
                     <div className={`transition-all duration-300 overflow-hidden ${isOpen || isPinned
-                        ? "opacity-100 max-w-[40px] translate-x-0"
+                        ? "opacity-100 max-w-10 translate-x-0"
                         : "opacity-0 max-w-0 -translate-x-2"}`}
                     >
                         <button onClick={() => setIsPinned(!isPinned)} className="p-2 rounded cursor-pointer hover:bg-gray-200">
@@ -45,7 +45,7 @@ export default function Sidebar() {
                         const isActive = location.pathname === item.path;
                         return (
                             <Link key={item.path} to={item.path} className={`flex items-center gap-3 p-2 rounded transition-all duration-300 ${isActive ? "bg-blue-100 text-blue-700" : "hover:bg-gray-100"}`}>
-                                <div className="flex-shrink-0 w-5 h-5">
+                                <div className="shrink-0 w-5 h-5">
                                     {item.icon}
                                 </div>
                                 <span className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen || isPinned
