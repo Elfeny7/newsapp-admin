@@ -31,10 +31,10 @@ export default function NewsTable({
                     <th className="w-[10%] p-2 text-center">Image</th>
                     <th onClick={() => toggleSort("title")} className="w-[20%] p-2 cursor-pointer hover:bg-blue-300">Title {getSortIcon("title")}</th>
                     <th onClick={() => toggleSort("slug")} className="w-[15%] p-2 cursor-pointer hover:bg-blue-300">Slug {getSortIcon("slug")}</th>
-                    <th onClick={() => toggleSort("excerpt")} className="w-[25%] p-2 cursor-pointer hover:bg-blue-300">Excerpt {getSortIcon("excerpt")}</th>
+                    <th onClick={() => toggleSort("excerpt")} className="w-[20%] p-2 cursor-pointer hover:bg-blue-300">Excerpt {getSortIcon("excerpt")}</th>
                     <th onClick={() => toggleSort("category_id")} className="w-[10%] p-2 cursor-pointer hover:bg-blue-300">Category {getSortIcon("category_id")}</th>
                     <th onClick={() => toggleSort("status")} className="w-[10%] p-2 cursor-pointer hover:bg-blue-300">Status {getSortIcon("status")}</th>
-                    <th className="w-[5%] p-2 text-center">Action</th>
+                    <th className="w-[10%] p-2 text-center">Action</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-blue-100">
