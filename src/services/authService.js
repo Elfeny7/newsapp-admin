@@ -24,6 +24,19 @@ export const loginAndStore = async (email, password) => {
   }
 };
 
+export const registerAndStore = async (name, email, password, passwordConfirmation) => {
+  try {
+    const { token, user } = await authApi.register(name, email, password, passwordConfirmation);
+    localStorage.setItem("token", token);
+    return user;
+  } catch (err) {
+    const code = err.response?.status || null;
+    const message = err.response?.data?.message || "Failed to register";
+    const error = err.response?.data?.error || null;
+    throw new ApiError(message, code, error);
+  }
+};
+
 export const clearAuth = () => {
   localStorage.removeItem("token");
 };
