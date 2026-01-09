@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../shared/lib/api/axios";
 
 export const fetchAll = async () => api.get("/users").then(res => res.data.data);
 

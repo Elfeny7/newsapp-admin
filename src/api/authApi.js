@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../shared/lib/api/axios";
 
 export const me = () => api.get("/me").then(res => res.data.data);
 

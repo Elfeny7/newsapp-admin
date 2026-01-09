@@ -1,14 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import User from "./pages/User";
-import Categories from "./pages/Category";
-import News from "./pages/News";
-import NewsDetail from "./pages/NewsDetail";
-import ProtectedRoute from "./routes/ProtectedRoute";
-import Sidebar from "./components/Sidebar";
+import Login from "@/features/auth/pages/Login";
+import Register from "@/features/auth/pages/Register";
+import Dashboard from "@/features/dashboard/pages/Dashboard";
+import User from "@/features/users/pages/User";
+import Categories from "@/features/category/pages/Category";
+import News from "@/features/news/pages/News";
+import NewsDetail from "@/features/news/pages/NewsDetail";
+import ProtectedRoute from "@/app/router/ProtectedRoute";
+import Sidebar from "@/shared/components/layouts/Sidebar";
 
 function App() {
   return (
