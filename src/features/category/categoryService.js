@@ -1,46 +1,34 @@
-import * as categoryApi from "@/api/categoryApi";
 import ApiError from "@/shared/utils/ApiError";
+import api from "@/shared/lib/api/axios";
 
 export const fetchAllCategories = async () => {
   try {
-    return await categoryApi.fetchAll();
+    return await api.get("/categories").then(res => res.data.data);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to fetch categories";
-    throw new ApiError(message, code);
+    throw ApiError.fromAxios(err);
   }
 };
 
 export const createCategory = async (payload) => {
   try {
-    const newCategory = await categoryApi.create(payload);
-    return newCategory;
+    return await api.post("/categories", payload).then(res => res.data.data);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to create category";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
+    throw ApiError.fromAxios(err);
   }
 };
 
 export const updateCategory = async (id, payload) => {
   try {
-    await categoryApi.update(id, payload);
+    await api.put(`/categories/${id}`, payload);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to update category";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
+    throw ApiError.fromAxios(err);
   }
 }
 
 export const deleteCategory = async (id) => {
   try {
-    await categoryApi.remove(id);
+    await api.delete(`/categories/${id}`);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to delete category";
-    throw new ApiError(message, code);
+    throw ApiError.fromAxios(err);
   }
 };
-

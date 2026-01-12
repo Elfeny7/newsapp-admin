@@ -1,44 +1,34 @@
-import * as userApi from "@/api/userApi";
 import ApiError from "@/shared/utils/ApiError";
+import api from "@/shared/lib/api/axios";
 
 export const fetchAllUsers = async () => {
   try {
-    return await userApi.fetchAll();
+    return await api.get("/users").then(res => res.data.data);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to fetch users";
-    throw new ApiError(message, code);
+    throw ApiError.fromAxios(err);
   }
 };
 
 export const createUser = async (payload) => {
   try {
-    return await userApi.create(payload);
+    return await api.post("/users", payload).then(res => res.data.data);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to create user";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
+    throw ApiError.fromAxios(err);
   }
 };
 
 export const updateUser = async (id, payload) => {
   try {
-    await userApi.update(id, payload);
+    await api.put(`/users/${id}`, payload);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to update user";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
+    throw ApiError.fromAxios(err);
   }
 }
 
 export const deleteUser = async (id) => {
   try {
-    await userApi.remove(id);
+    await api.delete(`/users/${id}`);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to delete user";
-    throw new ApiError(message, code);
+    throw ApiError.fromAxios(err);
   }
 };

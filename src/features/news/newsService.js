@@ -1,24 +1,20 @@
-import * as newsApi from "@/api/newsApi";
 import { STORAGE_BASE_URL } from "@/shared/lib/config/env";
 import ApiError from "@/shared/utils/ApiError";
+import api from "@/shared/lib/api/axios";
 
 export const BASE_URL = `${STORAGE_BASE_URL}/news/`;
 
 export const fetchAllNews = async () => {
-  return await newsApi.fetchAll();
+  return await api.get("/news").then(res => res.data.data);
 };
 
 export const createNews = async (form) => {
   try {
     const formData = new FormData();
     Object.entries(form).forEach(([key, val]) => formData.append(key, val));
-    const newNews = await newsApi.create(formData);
-    return newNews;
+    return await api.post("/news", formData).then(res => res.data.data);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal membuat berita";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
+    throw ApiError.fromAxios(err);
   }
 };
 
@@ -32,25 +28,20 @@ export const updateNews = async (id, form) => {
     });
 
     formData.append("_method", "PUT");
-    await newsApi.update(id, formData);
+    await api.post(`/news/${id}?_method=PUT`, formData);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal memperbarui berita";
-    const errors = err.response?.data?.errors || null;
-    throw new ApiError(message, code, errors);
+    throw ApiError.fromAxios(err);
   }
 }
 
 export const deleteNews = async (id) => {
   try {
-    await newsApi.remove(id);
+    await api.delete(`/news/${id}`);
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Gagal menghapus berita";
-    throw new ApiError(message, code);
+    throw ApiError.fromAxios(err);
   }
 };
 
 export const fetchNewsDetail = async (id) => {
-  return await newsApi.fetchById(id);
+  return await api.get(`/news/${id}`).then(res => res.data.data);
 }

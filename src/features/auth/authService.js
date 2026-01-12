@@ -1,11 +1,9 @@
-import * as authApi from "@/api/authApi";
 import ApiError from "@/shared/utils/ApiError";
 import api from "@/shared/lib/api/axios";
 
 export const fetchUser = async () => {
   try {
-    const res = await api.get("/me");
-    return res.data.data;
+    return await api.get("/me").then(res => res.data.data);
   } catch (err) {
     throw ApiError.fromAxios(err);
   }
@@ -13,7 +11,7 @@ export const fetchUser = async () => {
 
 export const loginAndStore = async (email, password) => {
   try {
-    const { token, user } = await authApi.login(email, password);
+    const { token, user } = await api.post("/login", { email, password }).then(res => res.data.data);
     localStorage.setItem("token", token);
     return user;
   } catch (err) {
@@ -21,16 +19,13 @@ export const loginAndStore = async (email, password) => {
   }
 };
 
-export const registerAndStore = async (name, email, password, passwordConfirmation) => {
+export const registerAndStore = async (name, email, password, password_confirmation) => {
   try {
-    const { token, user } = await authApi.register(name, email, password, passwordConfirmation);
+    const { token, user } = await api.post("/register", { name, email, password, password_confirmation }).then(res => res.data.data);
     localStorage.setItem("token", token);
     return user;
   } catch (err) {
-    const code = err.response?.status || null;
-    const message = err.response?.data?.message || "Failed to register";
-    const error = err.response?.data?.error || null;
-    throw new ApiError(message, code, error);
+    throw ApiError.fromAxios(err);
   }
 };
 
