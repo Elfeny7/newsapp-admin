@@ -101,8 +101,8 @@ export default function Category() {
                     categories={categories}
                 />
             )}
+            <div className="text-xl font-semibold mb-8">Category Management</div>
             <div className="flex items-center justify-between mb-5">
-                <h1 className="text-3xl font-bold">Category Management</h1>
                 <div className="flex items-center gap-2">
                     <Button onClick={() => setIsModalOpen(true)} >Add Category</Button>
                     <Search value={search} onChange={(e) => setSearch(e.target.value)} />

@@ -19,7 +19,7 @@ export default function Sidebar() {
     ];
 
     return (
-        <div className="flex h-screen bg-gray-200 overflow-hidden">
+        <div className="flex h-screen bg-gray-100 overflow-hidden">
             <div
                 className={`relative bg-white shadow-lg transition-[width] duration-300 ease-in-out ${isOpen || isPinned ? "w-64" : "w-16"}`}
                 onMouseEnter={() => !isPinned && setIsOpen(true)}
@@ -60,7 +60,7 @@ export default function Sidebar() {
             </div>
 
             <main className="flex-1 overflow-y-auto">
-                <div className="m-6 bg-white rounded-2xl shadow-md p-6">
+                <div className="m-8 bg-white rounded-2xl shadow-md">
                     <Outlet />
                 </div>
             </main>

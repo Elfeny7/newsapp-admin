@@ -103,8 +103,8 @@ export default function User() {
                     onClickEye={() => setShowPassword(!showPassword)}
                 />
             )}
+            <div className="text-xl font-semibold mb-8">User Management</div>
             <div className="flex items-center justify-between mb-5">
-                <h1 className="text-3xl font-bold">User Management</h1>
                 <div className="flex items-center gap-2">
                     <Button onClick={() => setIsModalOpen(true)} >Add User</Button>
                     <Search value={search} onChange={(e) => setSearch(e.target.value)} />

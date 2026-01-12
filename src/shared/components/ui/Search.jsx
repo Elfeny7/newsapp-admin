@@ -5,7 +5,7 @@ const Search = ({value = "", onChange}) => {
             placeholder="Search..."
             value={value}
             onChange={onChange}
-            className="rounded-lg p-2 w-[200px] bg-gray-200 focus:border-0 focus:ring-1 focus:ring-gray-300 focus:outline-none focus:border-gray-300"
+            className="rounded-md p-2 w-[200px] ring-1 ring-gray-300 focus:border-0 focus:ring-1 focus:ring-gray-400 focus:outline-none focus:border-gray-300 text-sm"
         />
     )
 };

@@ -64,10 +64,7 @@ export default function NewsDetail({ mode }) {
 
     return (
         <div className="p-6">
-            <div className="flex items-center justify-between mb-5">
-                <h1 className="text-3xl font-bold">News Detail</h1>
-            </div>
-
+            <div className="text-xl font-semibold mb-8">News Detail</div>
             <NewsForm
                 isEditing={isEditing}
                 form={form}

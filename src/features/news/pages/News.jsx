@@ -63,8 +63,8 @@ export default function News() {
 
     return (
         <div className="p-6">
+            <div className="text-xl font-semibold mb-8">News Management</div>
             <div className="flex items-center justify-between mb-5">
-                <h1 className="text-3xl font-bold">News Management</h1>
                 <div className="flex items-center gap-2">
                     <Button onClick={handleAddNews} >Add News</Button>
                     <Search value={search} onChange={(e) => setSearch(e.target.value)} />
