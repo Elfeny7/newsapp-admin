@@ -64,7 +64,7 @@ export default function NewsDetail({ mode }) {
 
     return (
         <div className="p-6">
-            <div className="text-xl font-semibold mb-8">News Detail</div>
+            <div className="text-lg font-semibold mb-6">News Detail</div>
             <NewsForm
                 isEditing={isEditing}
                 form={form}

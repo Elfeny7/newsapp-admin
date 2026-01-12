@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Menu, ChevronRight, ChevronLeft , House, Users, LayoutGrid, Newspaper } from "lucide-react";
+import { Menu, ChevronRight, ChevronLeft, House, Users, LayoutGrid, Newspaper } from "lucide-react";
 import { Outlet, Link, useLocation } from "react-router-dom";
+import Header from "./Header";
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -59,9 +60,12 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            <main className="flex-1 overflow-y-auto">
-                <div className="m-8 bg-white rounded-2xl shadow-md">
-                    <Outlet />
+            <main className="flex-1 flex flex-col overflow-hidden">
+                <Header />
+                <div className="flex-1 overflow-y-auto">
+                    <div className="m-8 bg-white rounded-2xl shadow-md">
+                        <Outlet />
+                    </div>
                 </div>
             </main>
         </div>
