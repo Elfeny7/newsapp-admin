@@ -43,7 +43,7 @@ export default function UserTable({
                                 <button onClick={() => onEdit(u)} disabled={loading} className={"cursor-pointer"}>
                                     <SquarePen size={20} />
                                 </button>
-                                <button onClick={() => onDelete(u.id)} disabled={loading} className={"cursor-pointer"}>
+                                <button onClick={() => onDelete(u)} disabled={loading} className={"cursor-pointer"}>
                                     <Trash2 size={20} />
                                 </button>
                             </td>

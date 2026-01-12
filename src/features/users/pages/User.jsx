@@ -18,7 +18,7 @@ export default function User() {
     const itemsPerPage = 10;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const defaultForm = {
         name: "",
@@ -118,8 +118,8 @@ export default function User() {
                 setSortField={setSortField}
                 setSortOrder={setSortOrder}
                 onEdit={handleEdit}
-                onDelete={(id) => {
-                    setSelectedId(id);
+                onDelete={(user) => {
+                    setSelectedUser(user);
                     setConfirmOpen(true);
                 }}
                 loading={loading}
@@ -140,11 +140,22 @@ export default function User() {
             {confirmOpen && (
                 <ModalConfirm
                     message="Apakah Anda yakin ingin menghapus user ini?"
+                    children={
+                        <div>
+                            <p><strong>Nama:</strong> {selectedUser.name}</p>
+                            <p><strong>Email:</strong> {selectedUser.email}</p>
+                            <p><strong>Role:</strong> {selectedUser.role}</p>
+                        </div>
+                    }
                     onConfirm={async () => {
-                        await handleDelete(selectedId);
+                        await handleDelete(selectedUser.id);
                         setConfirmOpen(false);
+                        setSelectedUser(null);
                     }}
-                    onCancel={() => setConfirmOpen(false)}
+                    onCancel={() => {
+                        setConfirmOpen(false);
+                        setSelectedUser(null);
+                    }}
                     loading={loading}
                 />
             )}
