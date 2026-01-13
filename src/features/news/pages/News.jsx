@@ -17,7 +17,8 @@ export default function News() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedNews, setSelectedNews] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState(null);
     const navigate = useNavigate();
 
     const { news, loading: loadingNews, initialLoading: initialLoadingNews, error: errorNews, deleteNews, clearError: clearNewsError } = useNews();
@@ -40,8 +41,8 @@ export default function News() {
         navigate("/news/create");
     }
 
-    const handleDelete = async (id) => {
-        await deleteNews(id);
+    const handleDelete = async (news) => {
+        await deleteNews(news.id);
         setConfirmOpen(false);
     };
 
@@ -78,8 +79,9 @@ export default function News() {
                 setSortField={setSortField}
                 setSortOrder={setSortOrder}
                 onEdit={handleDetail}
-                onDelete={(id) => {
-                    setSelectedId(id);
+                onDelete={(news, category) => {
+                    setSelectedNews(news);
+                    setSelectedCategory(category);
                     setConfirmOpen(true);
                 }}
                 loading={loading}
@@ -100,8 +102,15 @@ export default function News() {
             {confirmOpen && (
                 <ModalConfirm
                     message="Apakah Anda yakin ingin menghapus berita ini?"
+                    children={
+                        <div>
+                            <p><strong>Judul:</strong> {selectedNews.title}</p>
+                            <p><strong>Kategori:</strong> {selectedCategory.name}</p>
+                            <p><strong>Status:</strong> {selectedNews.status}</p>
+                        </div>
+                    }
                     onConfirm={async () => {
-                        await handleDelete(selectedId);
+                        await handleDelete(selectedNews);
                     }}
                     onCancel={() => setConfirmOpen(false)}
                     loading={loading}

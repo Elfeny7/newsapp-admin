@@ -18,7 +18,8 @@ export default function Category() {
     const itemsPerPage = 10;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedParent, setSelectedParent] = useState(null);
     const defaultForm = {
         name: "",
         slug: "",
@@ -71,9 +72,9 @@ export default function Category() {
         setForm({ ...category });
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (category) => {
         clearError();
-        await deleteCategory(id);
+        await deleteCategory(category.id);
         setConfirmOpen(false);
     };
 
@@ -116,8 +117,9 @@ export default function Category() {
                 setSortField={setSortField}
                 setSortOrder={setSortOrder}
                 onEdit={handleEdit}
-                onDelete={(id) => {
-                    setSelectedId(id);
+                onDelete={({c, parent}) => {
+                    setSelectedCategory(c);
+                    setSelectedParent(parent);
                     setConfirmOpen(true);
                 }}
                 loading={loading}
@@ -138,8 +140,15 @@ export default function Category() {
             {confirmOpen && (
                 <ModalConfirm
                     message="Apakah Anda yakin ingin menghapus kategori ini?"
+                    children={
+                        <div>
+                            <p><strong>Nama:</strong> {selectedCategory.name}</p>
+                            <p><strong>Parent:</strong> {selectedParent.name}</p>
+                            <p><strong>Status:</strong> {selectedCategory.status}</p>
+                        </div>
+                    }
                     onConfirm={async () => {
-                        await handleDelete(selectedId);
+                        await handleDelete(selectedCategory);
                     }}
                     onCancel={() => setConfirmOpen(false)}
                     loading={loading}

@@ -50,7 +50,7 @@ export default function CategoryTable({
                                 <button onClick={() => onEdit(c)} disabled={loading} className="cursor-pointer">
                                     <SquarePen size={20} />
                                 </button>
-                                <button onClick={() => onDelete(c.id)} disabled={loading} className="cursor-pointer">
+                                <button onClick={() => onDelete({c, parent})} disabled={loading} className="cursor-pointer">
                                     <Trash2 size={20} />
                                 </button>
                             </td>

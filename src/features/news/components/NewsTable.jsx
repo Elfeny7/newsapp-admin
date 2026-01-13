@@ -55,7 +55,7 @@ export default function NewsTable({
                                 <button onClick={() => onEdit(n)} disabled={loading} className="cursor-pointer">
                                     <SquarePen size={20} />
                                 </button>
-                                <button onClick={() => onDelete(n.id)} disabled={loading} className="cursor-pointer">
+                                <button onClick={() => onDelete(n, category)} disabled={loading} className="cursor-pointer">
                                     <Trash2 size={20} />
                                 </button>
                             </td>
