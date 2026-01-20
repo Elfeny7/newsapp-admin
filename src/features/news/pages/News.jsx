@@ -9,6 +9,7 @@ import Button from "@/shared/components/ui/Button";
 import Search from "@/shared/components/ui/Search";
 import Pagination from "@/shared/components/ui/Pagination";
 import NewsTable from "@/features/news/components/NewsTable";
+import { Newspaper } from "lucide-react";
 
 export default function News() {
     const [search, setSearch] = useState("");
@@ -64,7 +65,15 @@ export default function News() {
 
     return (
         <div className="p-6">
-            <div className="text-lg font-semibold mb-4">News Management</div>
+            <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-xl bg-blue-100">
+                    <Newspaper size={24} className="text-blue-600" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">News Management</h1>
+                    <p className="text-gray-500">Halaman untuk mengelola berita seperti judul, kontent, gambar, dan sebagainya</p>
+                </div>
+            </div>
             <div className="flex items-center justify-end mb-2">
                 <div className="flex items-center gap-2">
                     <Button onClick={handleAddNews} >Add News</Button>

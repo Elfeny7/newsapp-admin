@@ -8,6 +8,7 @@ import Search from "@/shared/components/ui/Search";
 import Button from "@/shared/components/ui/Button";
 import UserTable from "@/features/users/components/UserTable";
 import UserFormModal from "@/features/users/components/UserFormModal";
+import { Users } from "lucide-react";
 
 export default function User() {
     const [isEditing, setIsEditing] = useState(false);
@@ -103,7 +104,15 @@ export default function User() {
                     onClickEye={() => setShowPassword(!showPassword)}
                 />
             )}
-            <div className="text-lg font-semibold mb-4">User Management</div>
+            <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-xl bg-blue-100">
+                    <Users size={24} className="text-blue-600" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+                    <p className="text-gray-500">Halaman untuk mengelola pengguna seperti tambah, ubah, atau hapus pengguna</p>
+                </div>
+            </div>
             <div className="flex items-center justify-end mb-2">
                 <div className="flex items-center gap-2">
                     <Button onClick={() => setIsModalOpen(true)} >Add User</Button>

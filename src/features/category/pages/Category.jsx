@@ -8,6 +8,7 @@ import Search from "@/shared/components/ui/Search";
 import Button from "@/shared/components/ui/Button";
 import CategoryTable from "@/features/category/components/CategoryTable";
 import CategoryFormModal from "@/features/category/components/CategoryFormModal";
+import { LayoutGrid } from "lucide-react";
 
 export default function Category() {
     const [isEditing, setIsEditing] = useState(false);
@@ -102,7 +103,15 @@ export default function Category() {
                     categories={categories}
                 />
             )}
-            <div className="text-lg font-semibold mb-4">Category Management</div>
+            <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-xl bg-blue-100">
+                    <LayoutGrid size={24} className="text-blue-600" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Category Management</h1>
+                    <p className="text-gray-500">Halaman untuk mengelola kategori dari suatu berita</p>
+                </div>
+            </div>
             <div className="flex items-center justify-end mb-2">
                 <div className="flex items-center gap-2">
                     <Button onClick={() => setIsModalOpen(true)} >Add Category</Button>
@@ -117,7 +126,7 @@ export default function Category() {
                 setSortField={setSortField}
                 setSortOrder={setSortOrder}
                 onEdit={handleEdit}
-                onDelete={({c, parent}) => {
+                onDelete={({ c, parent }) => {
                     setSelectedCategory(c);
                     setSelectedParent(parent);
                     setConfirmOpen(true);
