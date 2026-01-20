@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNews } from "@/features/news/hooks/useNews";
+import { useUsers } from "@/features/users/hooks/useUsers";
 import { useCategories } from "@/features/category/hooks/useCategories";
 import { useFilteredSortedNews } from "@/features/news/hooks/useFilteredSortedNews";
 import ModalError from "@/shared/components/ui/ModalError";
@@ -24,14 +25,16 @@ export default function News() {
 
     const { news, loading: loadingNews, initialLoading: initialLoadingNews, error: errorNews, deleteNews, clearError: clearNewsError } = useNews();
     const { categories, initialLoading: initialLoadingCategories, globalError: errorCategories, clearError: clearCategoryError } = useCategories();
+    const { users, initialLoading: initialLoadingUsers, globalError: errorUsers, clearError: clearUserError } = useUsers();
 
-    const initialLoading = initialLoadingNews || initialLoadingCategories;
+    const initialLoading = initialLoadingNews || initialLoadingCategories || initialLoadingUsers;
     const loading = loadingNews;
-    const error = [errorNews, errorCategories].filter(Boolean);
+    const error = [errorNews, errorCategories, errorUsers].filter(Boolean);
 
     const clearError = () => {
         if (errorNews) clearNewsError();
         if (errorCategories) clearCategoryError();
+        if (errorUsers) clearUserError();
     };
 
     const handleDetail = (news) => {
@@ -50,6 +53,7 @@ export default function News() {
     const { paginatedNews, totalPages } = useFilteredSortedNews({
         news,
         categories,
+        users,
         search,
         sortField,
         sortOrder,
@@ -83,6 +87,7 @@ export default function News() {
             <NewsTable
                 data={paginatedNews}
                 categories={categories}
+                users={users}
                 sortField={sortField}
                 sortOrder={sortOrder}
                 setSortField={setSortField}

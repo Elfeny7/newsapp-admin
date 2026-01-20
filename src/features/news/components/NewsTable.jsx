@@ -4,6 +4,7 @@ import { BASE_URL } from "@/features/news/newsService";
 export default function NewsTable({
     data,
     categories,
+    users,
     sortField,
     sortOrder,
     setSortField,
@@ -34,12 +35,15 @@ export default function NewsTable({
                     <th onClick={() => toggleSort("excerpt")} className="w-[20%] p-2 cursor-pointer hover:bg-blue-300">Excerpt {getSortIcon("excerpt")}</th>
                     <th onClick={() => toggleSort("category_id")} className="w-[10%] p-2 cursor-pointer hover:bg-blue-300">Category {getSortIcon("category_id")}</th>
                     <th onClick={() => toggleSort("status")} className="w-[10%] p-2 cursor-pointer hover:bg-blue-300">Status {getSortIcon("status")}</th>
+                    <th onClick={() => toggleSort("views")} className="w-[5%] p-2 cursor-pointer hover:bg-blue-300">Views {getSortIcon("views")}</th>
+                    <th onClick={() => toggleSort("published_by")} className="w-[10%] p-2 cursor-pointer hover:bg-blue-300">Published By {getSortIcon("published_by")}</th>
                     <th className="w-[10%] p-2 text-center">Action</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-blue-100">
                 {data.map((n) => {
                     const category = categories.find((c) => c.id === n.category_id);
+                    const user = users.find((u) => u.id === n.published_by);
                     return (
                         <tr key={n.id} className="hover:bg-blue-100 transition">
                             <td className="p-2 text-center">{n.id}</td>
@@ -51,6 +55,8 @@ export default function NewsTable({
                             <td className="p-2">{n.excerpt}</td>
                             <td className="p-2">{category ? category.name : "-"}</td>
                             <td className="p-2">{n.status}</td>
+                            <td className="p-2">{n.views}</td>
+                            <td className="p-2">{user ? user.name : "-"}</td>
                             <td className="p-2 text-center space-x-4">
                                 <button onClick={() => onEdit(n)} disabled={loading} className="cursor-pointer">
                                     <SquarePen size={20} />
